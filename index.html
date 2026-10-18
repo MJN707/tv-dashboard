@@ -143,6 +143,12 @@
   .ramadan .dua { font-size: 2.1vh; color: var(--gold); font-weight: 700; margin-top: 0.8vh; }
 
   .status { position: absolute; bottom: 0; left: 0; font-size: 1.6vh; color: var(--soft); }
+  #fsHint {
+    position: absolute; top: 2vh; left: 50%; margin-left: -18vh; width: 36vh; text-align: center;
+    padding: 1vh 2vh; border-radius: 10vh; font-size: 2.4vh; font-weight: 800;
+    background: rgba(0, 0, 0, 0.6); color: #fff; display: none; z-index: 10;
+  }
+  body.not-fs #fsHint { display: block; }
 </style>
 </head>
 <body class="sky-night">
@@ -207,6 +213,7 @@
   <path d="M0 322 Q50 314 100 322 T200 322 T300 322 T400 322 T500 322 T600 322 T700 322 T800 322 T900 322 T1000 322 T1100 322 T1200 322 T1300 322 T1400 322 T1500 322 T1600 322 V340 H0z" fill="url(#sea)"/>
 </svg>
 
+<div id="fsHint">اضغط OK لملء الشاشة</div>
 <div id="stage">
   <div class="top">
     <div class="clock"><span id="hm">--:--</span><span class="sec" id="sec">--</span><span class="ampm" id="ampm"></span></div>
@@ -456,7 +463,7 @@ function updateSky(nowMin) {
   else if (nowMin < t.Sunrise + 30) sky = 'sky-dawn';
   else if (nowMin < t.Maghrib - 30) sky = 'sky-day';
   else sky = 'sky-sunset';
-  if (document.body.className !== sky) document.body.className = sky;
+  if (document.body.className.indexOf(sky) !== 0) document.body.className = sky + (isFullscreen() ? '' : ' not-fs');
 }
 
 function updateNext() {
@@ -576,8 +583,19 @@ function goFullscreen() {
   var req = el.requestFullscreen || el.webkitRequestFullscreen || el.webkitRequestFullScreen;
   if (req && !(document.fullscreenElement || document.webkitFullscreenElement)) { try { req.call(el); } catch (e) {} }
 }
-document.addEventListener('keydown', goFullscreen);
+function isFullscreen() { return !!(document.fullscreenElement || document.webkitFullscreenElement || document.webkitIsFullScreen); }
+function onFsChange() {
+  var c = document.body.className.replace(/\s*not-fs/g, '');
+  document.body.className = isFullscreen() ? c : c + ' not-fs';
+}
+document.addEventListener('keydown', function (e) {
+  // 461 is the Back button on LG remotes; keep it from leaving the page or full screen.
+  if (e.keyCode === 461 || e.keyCode === 8) { e.preventDefault(); e.stopPropagation(); }
+  goFullscreen();
+}, true);
 document.addEventListener('click', goFullscreen);
+document.addEventListener('fullscreenchange', onFsChange);
+document.addEventListener('webkitfullscreenchange', onFsChange);
 
 // Nudge the layout a few pixels every few minutes to avoid screen burn-in.
 var shifts = [[0, 0], [6, 4], [-6, 4], [6, -4], [-6, -4]], shiftIdx = 0;
@@ -586,6 +604,7 @@ setInterval(function () {
   $('stage').style.transform = 'translate(' + shifts[shiftIdx][0] + 'px,' + shifts[shiftIdx][1] + 'px)';
 }, 5 * 60000);
 
+onFsChange();
 loadPrayers();
 loadWeather();
 updateHoliday();
