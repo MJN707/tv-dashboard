@@ -5,148 +5,324 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>شاشة البيت</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0b1220;
-    --panel: #121b2e;
-    --line: #1f2a44;
-    --text: #eef2fa;
-    --muted: #8b98b5;
-    --accent: #e7b75f;
-    --accent-soft: rgba(231, 183, 95, 0.14);
+    --text: #ffffff;
+    --soft: rgba(255, 255, 255, 0.78);
+    --card: rgba(12, 16, 48, 0.55);
+    --card-line: rgba(255, 255, 255, 0.16);
+    --gold: #ffc94d;
+    --gold2: #ff8f3f;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
   body {
-    background: var(--bg);
     color: var(--text);
     font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
-    overflow: hidden;
-    font-size: 1.6vw;
+    cursor: none;
+    background: #141a4a;
+    transition: background 3s ease;
   }
+  /* Sky changes with the time of day */
+  body.sky-night  { background: linear-gradient(180deg, #070b2b 0%, #1b1a55 55%, #3b2a78 100%); }
+  body.sky-dawn   { background: linear-gradient(180deg, #2b2f7a 0%, #8a5bb0 45%, #ff9e7a 80%, #ffd08a 100%); }
+  body.sky-day    { background: linear-gradient(180deg, #1f6fd1 0%, #39a0ec 50%, #8fd6ff 100%); }
+  body.sky-sunset { background: linear-gradient(180deg, #2a1f6b 0%, #c2457a 50%, #ff8a4c 78%, #ffc76b 100%); }
+
+  /* ---------- Scenery ---------- */
+  #stars { position: absolute; top: 0; left: 0; width: 100%; height: 70%; transition: opacity 3s; opacity: 0; }
+  body.sky-night #stars { opacity: 1; }
+  body.sky-dawn #stars, body.sky-sunset #stars { opacity: 0.35; }
+  .star { position: absolute; width: 0.35vh; height: 0.35vh; background: #fff; border-radius: 50%; animation: twinkle 3s infinite ease-in-out; }
+  @keyframes twinkle { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+
+  #orb { position: absolute; top: 6vh; left: 38%; width: 12vh; height: 12vh; border-radius: 50%; transition: all 3s; }
+  body.sky-day #orb    { background: radial-gradient(circle, #fff6c2 0%, #ffd84d 55%, rgba(255, 216, 77, 0) 72%); }
+  body.sky-dawn #orb, body.sky-sunset #orb { top: 30vh; background: radial-gradient(circle, #fff1c7 0%, #ffb35a 55%, rgba(255, 140, 70, 0) 72%); }
+  body.sky-night #orb  { background: none; }
+  #moon { position: absolute; top: 7vh; left: 38%; width: 10vh; height: 10vh; opacity: 0; transition: opacity 3s; }
+  body.sky-night #moon { opacity: 1; }
+
+  .cloud { position: absolute; opacity: 0.85; animation: drift linear infinite; }
+  @keyframes drift { from { transform: translateX(-30vw); } to { transform: translateX(130vw); } }
+  body.sky-night .cloud { opacity: 0.18; }
+
+  #skyline { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 34vh; }
+
+  /* ---------- Layout ---------- */
   #stage {
-    position: absolute; top: 3vh; bottom: 3vh; left: 3vw; right: 3vw;
+    position: absolute; top: 3vh; bottom: 3vh; left: 2.5vw; right: 2.5vw;
     display: flex; flex-direction: column;
     transition: transform 2s ease;
   }
-
-  /* Top: clock + date */
-  .top { display: flex; align-items: flex-end; justify-content: space-between; }
-  .clock { font-size: 10vw; font-weight: 800; line-height: 0.9; letter-spacing: -0.02em; direction: ltr; }
-  .clock .sec { font-size: 3.4vw; color: var(--muted); font-weight: 500; margin-left: 0.6vw; }
+  .top { display: flex; align-items: center; justify-content: space-between; height: 17vh; }
+  .clock {
+    direction: ltr; font-weight: 900; font-size: 15vh; line-height: 1;
+    text-shadow: 0 0.6vh 2.4vh rgba(0, 0, 0, 0.35);
+  }
+  .clock .sec { font-size: 5vh; font-weight: 700; color: var(--soft); margin-left: 1vh; }
+  .clock .ampm { font-size: 5vh; font-weight: 800; color: var(--gold); margin-left: 1vh; }
   .dates { text-align: left; }
-  .dates .hijri { font-size: 2.6vw; font-weight: 700; color: var(--accent); }
-  .dates .greg { font-size: 1.8vw; color: var(--muted); margin-top: 0.4vh; }
-  .dates .city { font-size: 1.4vw; color: var(--muted); margin-top: 0.4vh; }
-
-  /* Next prayer banner */
-  .next {
-    margin-top: 3vh; padding: 2vh 2vw; border-radius: 1.2vw;
-    background: var(--accent-soft); border: 1px solid rgba(231, 183, 95, 0.35);
-    display: flex; align-items: center; justify-content: space-between;
+  .pill {
+    display: inline-block; padding: 0.8vh 2vh; border-radius: 10vh; font-weight: 800;
+    background: linear-gradient(90deg, var(--gold2), var(--gold)); color: #3a1d00; font-size: 3.4vh;
+    box-shadow: 0 0.6vh 2vh rgba(255, 150, 60, 0.4);
   }
-  .next .label { font-size: 1.6vw; color: var(--muted); }
-  .next .name { font-size: 3vw; font-weight: 800; color: var(--accent); }
-  .next .left { font-size: 3.4vw; font-weight: 700; direction: ltr; }
+  .greg { font-size: 2.8vh; margin-top: 1.2vh; color: var(--text); font-weight: 700; text-shadow: 0 0.3vh 1vh rgba(0,0,0,0.35); }
+  .city { font-size: 2.2vh; color: var(--soft); margin-top: 0.4vh; }
 
-  /* Main row */
-  .main { flex: 1; display: flex; margin-top: 3vh; min-height: 0; }
-  .main > .card { flex: 1; }
-  .main > .card + .card { margin-right: 2vw; }
+  .main { flex: 1; display: flex; margin-top: 2vh; min-height: 0; }
+  .col { display: flex; flex-direction: column; min-width: 0; }
+  .col + .col { margin-right: 1.6vw; }
+  .col-prayers { width: 30%; }
+  .col-mid { width: 35%; }
+  .col-count { flex: 1; }
+  .col > .card + .card { margin-top: 1.8vh; }
+
   .card {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 1.2vw;
-    padding: 2.4vh 2vw; display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+    background: var(--card); border: 1px solid var(--card-line); border-radius: 2.4vh;
+    padding: 2vh 2.2vh; box-shadow: 0 1vh 3vh rgba(0, 0, 0, 0.25);
   }
-  .card h2 { font-size: 1.5vw; color: var(--muted); font-weight: 500; margin-bottom: 1.6vh; }
+  .card h2 { font-size: 2.2vh; font-weight: 700; color: var(--soft); margin-bottom: 1vh; }
+  .card .stripe { position: absolute; top: 0; right: 0; left: 0; height: 0.7vh; }
 
-  .prayers { display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
+  /* Prayers */
+  .col-prayers .card { flex: 1; display: flex; flex-direction: column; }
+  .prayers { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
   .prayer {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 1.1vh 1.2vw; border-radius: 0.8vw; font-size: 2.2vw;
+    display: flex; align-items: center; padding: 0.9vh 1.4vh; border-radius: 1.6vh;
+    font-size: 3.3vh; font-weight: 700;
   }
-  .prayer .t { font-weight: 700; }
-  .prayer.past { color: var(--muted); }
-  .prayer.current { background: var(--accent); color: #1a1205; }
-  .prayer.current .t { color: #1a1205; }
+  .prayer .ic { width: 4.4vh; height: 4.4vh; margin-left: 1.4vh; flex-shrink: 0; }
+  .prayer .nm { flex: 1; }
+  .prayer .t { font-weight: 800; }
+  .prayer.past { opacity: 0.5; }
+  .prayer.current {
+    background: linear-gradient(90deg, var(--gold2), var(--gold)); color: #3a1d00;
+    box-shadow: 0 0.6vh 2vh rgba(255, 160, 60, 0.45);
+  }
 
+  /* Next prayer */
+  .next { background: linear-gradient(135deg, rgba(255, 143, 63, 0.92), rgba(255, 201, 77, 0.92)); color: #3a1d00; border-color: rgba(255,255,255,0.35); }
+  .next h2 { color: rgba(58, 29, 0, 0.75); }
+  .next .row { display: flex; align-items: flex-end; justify-content: space-between; }
+  .next .name { font-size: 6vh; font-weight: 900; line-height: 1; }
+  .next .at { font-size: 2.4vh; font-weight: 700; margin-top: 0.6vh; }
+  .next .left { direction: ltr; font-size: 5.4vh; font-weight: 900; line-height: 1; }
+  .next .left-lbl { font-size: 2vh; font-weight: 700; text-align: left; margin-bottom: 0.4vh; }
+
+  /* Weather */
+  .wx { flex: 1; display: flex; flex-direction: column; background: linear-gradient(160deg, rgba(31, 111, 209, 0.75), rgba(16, 30, 90, 0.75)); }
   .wx-now { display: flex; align-items: center; }
-  .wx-now svg { width: 8vw; height: 8vw; margin-left: 1.6vw; }
-  .wx-temp { font-size: 6.4vw; font-weight: 800; line-height: 1; direction: ltr; }
-  .wx-desc { font-size: 2vw; font-weight: 700; margin-top: 0.6vh; }
-  .wx-meta { display: flex; margin-top: 2vh; font-size: 1.5vw; color: var(--muted); }
-  .wx-meta div + div { margin-right: 2.4vw; }
-  .wx-meta b { color: var(--text); font-weight: 700; }
-
-  .days { display: flex; margin-top: auto; padding-top: 2vh; border-top: 1px solid var(--line); }
+  .wx-now .big { width: 11vh; height: 11vh; margin-left: 2vh; }
+  .wx-temp { font-size: 9vh; font-weight: 900; line-height: 1; direction: ltr; text-align: right; }
+  .wx-desc { font-size: 3vh; font-weight: 800; }
+  .wx-meta { display: flex; margin-top: 1.4vh; font-size: 2.2vh; color: var(--soft); }
+  .wx-meta div + div { margin-right: 2.4vh; }
+  .wx-meta b { color: var(--text); }
+  .days { display: flex; margin-top: auto; padding-top: 1.4vh; border-top: 1px solid var(--card-line); }
   .day { flex: 1; text-align: center; }
-  .day .dn { font-size: 1.4vw; color: var(--muted); }
-  .day svg { width: 3.6vw; height: 3.6vw; margin: 0.8vh 0; }
-  .day .hl { font-size: 1.6vw; font-weight: 700; direction: ltr; }
-  .day .hl span { color: var(--muted); font-weight: 500; }
+  .day .dn { font-size: 2vh; color: var(--soft); font-weight: 700; }
+  .day svg { width: 5vh; height: 5vh; margin: 0.4vh 0; }
+  .day .hl { font-size: 2.3vh; font-weight: 800; }
+  .day .hl span { color: var(--soft); font-weight: 500; }
 
-  .status { position: absolute; bottom: 0; left: 0; font-size: 1vw; color: var(--muted); opacity: 0.6; }
+  /* Countdowns */
+  .count { flex: 1; display: flex; align-items: center; }
+  .count .art { width: 15vh; height: 15vh; flex-shrink: 0; margin-left: 2vh; }
+  .count .body { flex: 1; min-width: 0; }
+  .count .lbl { font-size: 2.2vh; font-weight: 700; color: var(--soft); }
+  .count .what { font-size: 3.6vh; font-weight: 900; margin-top: 0.3vh; }
+  .count .num { font-size: 8vh; font-weight: 900; line-height: 1.05; }
+  .count .num small { font-size: 3vh; font-weight: 800; margin-right: 1vh; }
+  .count .sub { font-size: 2vh; color: var(--soft); margin-top: 0.4vh; }
+  .holiday { background: linear-gradient(135deg, rgba(0, 168, 150, 0.85), rgba(20, 90, 160, 0.85)); }
+  .ramadan { background: linear-gradient(135deg, rgba(116, 52, 196, 0.88), rgba(40, 24, 110, 0.88)); }
+  .ramadan .dua { font-size: 2.1vh; color: var(--gold); font-weight: 700; margin-top: 0.8vh; }
+
+  .status { position: absolute; bottom: 0; left: 0; font-size: 1.6vh; color: var(--soft); }
 </style>
 </head>
-<body>
+<body class="sky-night">
+
+<!-- Scenery -->
+<div id="stars"></div>
+<div id="orb"></div>
+<svg id="moon" viewBox="0 0 100 100"><path d="M62 10a40 40 0 1 0 28 62A34 34 0 1 1 62 10z" fill="#fff3c4"/></svg>
+<svg class="cloud" style="top:9vh;width:22vh;animation-duration:140s;animation-delay:-40s" viewBox="0 0 200 80"><path d="M30 70h140a25 25 0 0 0 0-50 35 35 0 0 0-66-8A28 28 0 0 0 30 70z" fill="#fff"/></svg>
+<svg class="cloud" style="top:20vh;width:15vh;animation-duration:190s;animation-delay:-120s" viewBox="0 0 200 80"><path d="M30 70h140a25 25 0 0 0 0-50 35 35 0 0 0-66-8A28 28 0 0 0 30 70z" fill="#fff"/></svg>
+
+<svg id="skyline" viewBox="0 0 1600 340" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1fb5d6"/><stop offset="1" stop-color="#0b4f8a"/></linearGradient>
+    <linearGradient id="far" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3f8f"/><stop offset="1" stop-color="#262b6b"/></linearGradient>
+    <linearGradient id="near" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c1f52"/><stop offset="1" stop-color="#11143a"/></linearGradient>
+  </defs>
+  <!-- far towers -->
+  <g fill="url(#far)" opacity="0.9">
+    <rect x="60" y="150" width="60" height="190"/><rect x="130" y="110" width="45" height="230"/>
+    <rect x="185" y="170" width="70" height="170"/><rect x="1180" y="140" width="55" height="200"/>
+    <rect x="1245" y="95" width="40" height="245"/><path d="M1265 95l0-35 3 0 0 35z"/>
+    <rect x="1295" y="160" width="80" height="180"/><rect x="1390" y="125" width="50" height="215"/>
+    <rect x="1450" y="175" width="90" height="165"/>
+  </g>
+  <!-- windows -->
+  <g fill="#ffd77a" opacity="0.55">
+    <rect x="140" y="130" width="6" height="8"/><rect x="155" y="160" width="6" height="8"/><rect x="140" y="200" width="6" height="8"/>
+    <rect x="1255" y="120" width="6" height="8"/><rect x="1270" y="160" width="6" height="8"/><rect x="1255" y="210" width="6" height="8"/>
+    <rect x="1400" y="150" width="6" height="8"/><rect x="1420" y="190" width="6" height="8"/><rect x="75" y="180" width="6" height="8"/>
+  </g>
+  <!-- King Fahd fountain -->
+  <g opacity="0.85">
+    <path d="M905 300 C900 200 902 120 908 40 C914 120 916 200 911 300 z" fill="#e8f7ff"/>
+    <path d="M908 40 C890 60 880 90 876 120" stroke="#e8f7ff" stroke-width="4" fill="none" opacity="0.6"/>
+    <path d="M908 40 C926 60 936 90 940 120" stroke="#e8f7ff" stroke-width="4" fill="none" opacity="0.6"/>
+  </g>
+  <!-- mosque -->
+  <g fill="url(#near)">
+    <rect x="480" y="120" width="16" height="200"/><path d="M476 120l12-40 12 40z"/><circle cx="488" cy="74" r="5" fill="#ffc94d"/>
+    <rect x="720" y="120" width="16" height="200"/><path d="M716 120l12-40 12 40z"/><circle cx="728" cy="74" r="5" fill="#ffc94d"/>
+    <rect x="470" y="125" width="36" height="8"/><rect x="710" y="125" width="36" height="8"/>
+    <rect x="510" y="220" width="200" height="100"/>
+    <path d="M540 220 C540 150 680 150 680 220 z"/>
+    <path d="M606 152 l4 -18 l4 18 z" fill="#ffc94d"/>
+    <path d="M520 230 C520 200 560 200 560 230 z"/><path d="M660 230 C660 200 700 200 700 230 z"/>
+  </g>
+  <g fill="#ffd77a" opacity="0.8">
+    <path d="M545 320v-45a10 10 0 0 1 20 0v45z"/><path d="M600 320v-55a10 10 0 0 1 20 0v55z"/><path d="M655 320v-45a10 10 0 0 1 20 0v45z"/>
+  </g>
+  <!-- palms -->
+  <g fill="#14173f">
+    <rect x="330" y="200" width="8" height="120" transform="rotate(4 334 260)"/>
+    <path d="M334 200c-30-10-55 0-70 18 25-8 45-8 70-18zm0 0c30-10 55 0 70 18-25-8-45-8-70-18zm0 0c-20-25-45-30-65-25 22 4 42 12 65 25zm0 0c20-25 45-30 65-25-22 4-42 12-65 25z"/>
+    <rect x="1050" y="215" width="8" height="105" transform="rotate(-5 1054 265)"/>
+    <path d="M1054 215c-30-10-55 0-70 18 25-8 45-8 70-18zm0 0c30-10 55 0 70 18-25-8-45-8-70-18zm0 0c-20-25-45-30-65-25 22 4 42 12 65 25zm0 0c20-25 45-30 65-25-22 4-42 12-65 25z"/>
+    <rect x="1110" y="235" width="7" height="85" transform="rotate(3 1113 275)"/>
+    <path d="M1113 235c-25-8-45 0-58 15 20-6 38-6 58-15zm0 0c25-8 45 0 58 15-20-6-38-6-58-15zm0 0c-16-20-36-24-52-20 18 3 34 10 52 20z"/>
+  </g>
+  <!-- ground and sea -->
+  <rect x="0" y="315" width="1600" height="30" fill="#11143a"/>
+  <path d="M0 322 Q50 314 100 322 T200 322 T300 322 T400 322 T500 322 T600 322 T700 322 T800 322 T900 322 T1000 322 T1100 322 T1200 322 T1300 322 T1400 322 T1500 322 T1600 322 V340 H0z" fill="url(#sea)"/>
+</svg>
+
 <div id="stage">
   <div class="top">
-    <div class="clock"><span id="hm">--:--</span><span class="sec" id="sec">--</span><span class="sec" id="ampm"></span></div>
+    <div class="clock"><span id="hm">--:--</span><span class="sec" id="sec">--</span><span class="ampm" id="ampm"></span></div>
     <div class="dates">
-      <div class="hijri" id="hijri">&nbsp;</div>
+      <div class="pill" id="hijri">&nbsp;</div>
       <div class="greg" id="greg">&nbsp;</div>
-      <div class="city">جدة</div>
+      <div class="city">جدة · المملكة العربية السعودية</div>
     </div>
-  </div>
-
-  <div class="next">
-    <div><div class="label">الصلاة القادمة</div><div class="name" id="nextName">—</div></div>
-    <div><div class="label">باقي</div><div class="left" id="nextLeft">--:--:--</div></div>
   </div>
 
   <div class="main">
-    <div class="card">
-      <h2>أوقات الصلاة · تقويم أم القرى</h2>
-      <div class="prayers" id="prayers"></div>
+    <div class="col col-prayers">
+      <div class="card">
+        <h2>أوقات الصلاة · أم القرى</h2>
+        <div class="prayers" id="prayers"></div>
+      </div>
     </div>
-    <div class="card">
-      <h2>الطقس الآن</h2>
-      <div class="wx-now">
-        <span id="wxIcon"></span>
-        <div>
-          <div class="wx-temp" id="wxTemp">--°</div>
-          <div class="wx-desc" id="wxDesc">&nbsp;</div>
+
+    <div class="col col-mid">
+      <div class="card next">
+        <h2>الصلاة القادمة</h2>
+        <div class="row">
+          <div><div class="name" id="nextName">—</div><div class="at" id="nextAt">&nbsp;</div></div>
+          <div><div class="left-lbl">باقي</div><div class="left" id="nextLeft">--:--:--</div></div>
         </div>
       </div>
-      <div class="wx-meta">
-        <div>الإحساس <b id="wxFeel">--°</b></div>
-        <div>الرطوبة <b id="wxHum">--%</b></div>
-        <div>الرياح <b id="wxWind">--</b> كم/س</div>
+      <div class="card wx">
+        <h2>الطقس في جدة</h2>
+        <div class="wx-now">
+          <span id="wxIcon"></span>
+          <div><div class="wx-temp" id="wxTemp">--°</div><div class="wx-desc" id="wxDesc">&nbsp;</div></div>
+        </div>
+        <div class="wx-meta">
+          <div>الإحساس <b id="wxFeel">--°</b></div>
+          <div>الرطوبة <b id="wxHum">--%</b></div>
+          <div>الرياح <b id="wxWind">--</b> كم/س</div>
+        </div>
+        <div class="days" id="days"></div>
       </div>
-      <div class="days" id="days"></div>
+    </div>
+
+    <div class="col col-count">
+      <div class="card count holiday">
+        <div class="stripe" style="background:linear-gradient(90deg,#7cf5c8,#4cc3ff)"></div>
+        <svg class="art" viewBox="0 0 120 120">
+          <circle cx="92" cy="26" r="13" fill="#ffd84d"/>
+          <path d="M8 104 Q60 88 112 104 V120 H8z" fill="#ffe1a1"/>
+          <path d="M60 30 L58 104" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M14 56 C22 26 98 26 106 56 Z" fill="#ff5d73"/>
+          <path d="M14 56 C24 44 36 44 40 56 Z M40 56 C48 40 72 40 80 56 Z M80 56 C84 44 96 44 106 56 Z" fill="#ffd84d"/>
+          <path d="M60 28 L60 22" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+          <rect x="70" y="92" width="26" height="6" rx="3" fill="#4cc3ff"/>
+          <circle cx="30" cy="98" r="7" fill="#7cf5c8"/><path d="M23 98h14M30 91v14" stroke="#fff" stroke-width="1.6"/>
+        </svg>
+        <div class="body">
+          <div class="lbl" id="hLbl">الإجازة القادمة</div>
+          <div class="what" id="hName">—</div>
+          <div class="num" id="hNum">--<small>يوم</small></div>
+          <div class="sub" id="hSub">&nbsp;</div>
+        </div>
+      </div>
+      <div class="card count ramadan">
+        <div class="stripe" style="background:linear-gradient(90deg,#ffc94d,#ff8fd1)"></div>
+        <svg class="art" viewBox="0 0 120 120">
+          <path d="M84 8a20 20 0 1 0 14 34A17 17 0 1 1 84 8z" fill="#ffe08a"/>
+          <circle cx="24" cy="16" r="2" fill="#fff"/><circle cx="40" cy="30" r="1.5" fill="#fff"/><circle cx="104" cy="60" r="1.8" fill="#fff"/>
+          <path d="M60 14 V26" stroke="#ffc94d" stroke-width="3"/>
+          <circle cx="60" cy="12" r="4" fill="none" stroke="#ffc94d" stroke-width="3"/>
+          <path d="M44 34 H76 L70 26 H50 Z" fill="#ffc94d"/>
+          <path d="M44 34 C38 52 38 74 46 92 H74 C82 74 82 52 76 34 Z" fill="#ff9f43"/>
+          <path d="M50 40 C46 56 46 72 51 86 H69 C74 72 74 56 70 40 Z" fill="#fff2b3"/>
+          <path d="M60 46 C54 56 54 66 60 80 C66 66 66 56 60 46 Z" fill="#ff7a59"/>
+          <path d="M46 92 H74 L70 100 H50 Z" fill="#ffc94d"/>
+          <path d="M56 100 H64 L62 108 H58 Z" fill="#ffc94d"/>
+        </svg>
+        <div class="body">
+          <div class="lbl" id="rLbl">باقي على رمضان</div>
+          <div class="num" id="rNum">--<small>يوم</small></div>
+          <div class="sub" id="rSub">&nbsp;</div>
+          <div class="dua">اللهم بلّغنا رمضان لا فاقدين ولا مفقودين</div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="status" id="status"></div>
 </div>
 
 <script>
-// Written in ES5 with XMLHttpRequest so it runs on the older webOS browser.
+// Written in ES5 with XMLHttpRequest so it runs on the older webOS TV browser.
 var CITY = { name: 'Jeddah', country: 'SA', lat: 21.5433, lon: 39.1728 };
 var TZ_OFFSET_MIN = 180; // Saudi Arabia, UTC+3, no daylight saving
 
+// School breaks 1448 (2026-2027) for Makkah, Jeddah, Madinah and Taif.
+// start = first day off, end = last day off (inclusive).
+var HOLIDAYS = [
+  { name: 'إجازة الخريف',          start: '2026-11-20', end: '2026-11-28' },
+  { name: 'إجازة منتصف العام',      start: '2027-01-08', end: '2027-01-16' },
+  { name: 'إجازة يوم التأسيس',      start: '2027-02-19', end: '2027-02-22' },
+  { name: 'إجازة عيد الفطر',        start: '2027-02-26', end: '2027-03-13' },
+  { name: 'إجازة عيد الأضحى',       start: '2027-04-30', end: '2027-05-22' },
+  { name: 'إجازة نهاية العام',       start: '2027-07-01', end: '2027-08-28' }
+];
+var RAMADAN_FALLBACK = { year: 1448, date: '2027-02-08' };
+
 var PRAYERS = [
-  { key: 'Fajr', ar: 'الفجر' },
-  { key: 'Sunrise', ar: 'الشروق' },
-  { key: 'Dhuhr', ar: 'الظهر' },
-  { key: 'Asr', ar: 'العصر' },
-  { key: 'Maghrib', ar: 'المغرب' },
-  { key: 'Isha', ar: 'العشاء' }
+  { key: 'Fajr', ar: 'الفجر', icon: 'dawn' },
+  { key: 'Sunrise', ar: 'الشروق', icon: 'sunrise' },
+  { key: 'Dhuhr', ar: 'الظهر', icon: 'noon' },
+  { key: 'Asr', ar: 'العصر', icon: 'afternoon' },
+  { key: 'Maghrib', ar: 'المغرب', icon: 'sunset' },
+  { key: 'Isha', ar: 'العشاء', icon: 'night' }
 ];
 var DAYS_AR = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 var MONTHS_AR = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
 
-var timings = null;   // { Fajr: minutesOfDay, ... }
-var timingsDay = null;
+var timings = null, timingsDay = null, hijri = null, ramadanStart = null;
 
 function $(id) { return document.getElementById(id); }
 function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -156,12 +332,26 @@ function nowKsa() {
   var d = new Date();
   return new Date(d.getTime() + (d.getTimezoneOffset() + TZ_OFFSET_MIN) * 60000);
 }
-
+// Whole days from today (KSA) to a 'YYYY-MM-DD' date.
+function daysUntil(iso) {
+  var n = nowKsa(), p = iso.split('-');
+  var today = Date.UTC(n.getFullYear(), n.getMonth(), n.getDate());
+  var target = Date.UTC(+p[0], +p[1] - 1, +p[2]);
+  return Math.round((target - today) / 86400000);
+}
+function fmtDate(iso) {
+  var p = iso.split('-'), d = new Date(+p[0], +p[1] - 1, +p[2]);
+  return DAYS_AR[d.getDay()] + ' ' + (+p[2]) + ' ' + MONTHS_AR[+p[1] - 1];
+}
+function dayWord(n) {
+  if (n === 1) return 'يوم واحد';
+  if (n === 2) return 'يومين';
+  if (n >= 3 && n <= 10) return 'أيام';
+  return 'يوم';
+}
 function to12h(mins) {
-  var h = Math.floor(mins / 60), m = mins % 60;
-  var suffix = h < 12 ? 'ص' : 'م';
-  var h12 = h % 12; if (h12 === 0) h12 = 12;
-  return '<span dir="ltr">' + h12 + ':' + pad(m) + '</span> ' + suffix;
+  var h = Math.floor(mins / 60), m = mins % 60, h12 = h % 12 || 12;
+  return '<span dir="ltr">' + h12 + ':' + pad(m) + '</span> ' + (h < 12 ? 'ص' : 'م');
 }
 
 function getJSON(url, ok, fail) {
@@ -176,70 +366,28 @@ function getJSON(url, ok, fail) {
   x.ontimeout = function () { fail && fail('timeout'); };
   x.send();
 }
-
 function setStatus(msg) { $('status').innerHTML = msg; }
 
-/* ---------- Prayer times ---------- */
-function loadPrayers() {
-  var n = nowKsa();
-  var dateStr = pad(n.getDate()) + '-' + pad(n.getMonth() + 1) + '-' + n.getFullYear();
-  var url = 'https://api.aladhan.com/v1/timingsByCity/' + dateStr +
-    '?city=' + CITY.name + '&country=' + CITY.country + '&method=4';
-  getJSON(url, function (res) {
-    var t = res.data.timings, h = res.data.date.hijri;
-    timings = {};
-    for (var i = 0; i < PRAYERS.length; i++) {
-      var parts = t[PRAYERS[i].key].split(' ')[0].split(':');
-      timings[PRAYERS[i].key] = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-    }
-    timingsDay = n.getDate();
-    $('hijri').innerHTML = h.day + ' ' + h.month.ar + ' ' + h.year + ' هـ';
-    renderPrayers();
-    setStatus('');
-  }, function () {
-    setStatus('تعذّر تحميل أوقات الصلاة، بنحاول مرة ثانية…');
-    setTimeout(loadPrayers, 60000);
-  });
+/* ---------- Icons ---------- */
+function prayerIcon(kind) {
+  var sun = function (c) { return '<circle cx="32" cy="32" r="11" fill="' + c + '"/>'; };
+  var rays = function (c) {
+    return '<g stroke="' + c + '" stroke-width="4" stroke-linecap="round"><line x1="32" y1="6" x2="32" y2="13"/>' +
+      '<line x1="32" y1="51" x2="32" y2="58"/><line x1="6" y1="32" x2="13" y2="32"/><line x1="51" y1="32" x2="58" y2="32"/>' +
+      '<line x1="14" y1="14" x2="19" y2="19"/><line x1="45" y1="45" x2="50" y2="50"/><line x1="14" y1="50" x2="19" y2="45"/><line x1="45" y1="19" x2="50" y2="14"/></g>';
+  };
+  var horizon = '<rect x="4" y="42" width="56" height="5" rx="2.5" fill="#7fd3ff"/>';
+  var b = '';
+  if (kind === 'dawn') b = '<path d="M14 42a18 18 0 0 1 36 0z" fill="#ff9fd0"/>' + horizon + '<circle cx="48" cy="14" r="2.5" fill="#fff"/>';
+  else if (kind === 'sunrise') b = '<path d="M14 42a18 18 0 0 1 36 0z" fill="#ffb347"/>' + horizon +
+    '<g stroke="#ffb347" stroke-width="4" stroke-linecap="round"><line x1="32" y1="8" x2="32" y2="16"/><line x1="12" y1="20" x2="17" y2="25"/><line x1="52" y1="20" x2="47" y2="25"/></g>';
+  else if (kind === 'noon') b = sun('#ffd84d') + rays('#ffd84d');
+  else if (kind === 'afternoon') b = sun('#ffad33') + rays('#ffad33') + '<path d="M28 54h26a9 9 0 0 0 0-18 12 12 0 0 0-23-2A10 10 0 0 0 28 54z" fill="#e6f2ff"/>';
+  else if (kind === 'sunset') b = '<path d="M14 42a18 18 0 0 1 36 0z" fill="#ff6b5a"/>' + horizon + '<rect x="12" y="50" width="40" height="4" rx="2" fill="#7fd3ff" opacity=".6"/>';
+  else b = '<path d="M38 10a20 20 0 1 0 16 32A17 17 0 1 1 38 10z" fill="#ffe08a"/><circle cx="14" cy="16" r="2.5" fill="#fff"/><circle cx="52" cy="12" r="2" fill="#fff"/>';
+  return '<svg class="ic" viewBox="0 0 64 64">' + b + '</svg>';
 }
 
-function renderPrayers() {
-  if (!timings) return;
-  var n = nowKsa();
-  var nowMin = n.getHours() * 60 + n.getMinutes();
-  var currentIdx = -1;
-  for (var i = 0; i < PRAYERS.length; i++) {
-    if (timings[PRAYERS[i].key] <= nowMin) currentIdx = i;
-  }
-  var html = '';
-  for (var j = 0; j < PRAYERS.length; j++) {
-    var cls = 'prayer';
-    if (j === currentIdx) cls += ' current';
-    else if (j < currentIdx) cls += ' past';
-    html += '<div class="' + cls + '"><span>' + PRAYERS[j].ar + '</span><span class="t">' +
-      to12h(timings[PRAYERS[j].key]) + '</span></div>';
-  }
-  $('prayers').innerHTML = html;
-}
-
-function updateNext() {
-  if (!timings) return;
-  var n = nowKsa();
-  var nowSec = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds();
-  var next = null, diff = 0;
-  for (var i = 0; i < PRAYERS.length; i++) {
-    if (PRAYERS[i].key === 'Sunrise') continue;
-    var s = timings[PRAYERS[i].key] * 60;
-    if (s > nowSec) { next = PRAYERS[i]; diff = s - nowSec; break; }
-  }
-  if (!next) { // after Isha: next is tomorrow's Fajr (today's time is a close estimate)
-    next = PRAYERS[0];
-    diff = 86400 - nowSec + timings.Fajr * 60;
-  }
-  $('nextName').innerHTML = next.ar;
-  $('nextLeft').innerHTML = pad(Math.floor(diff / 3600)) + ':' + pad(Math.floor(diff % 3600 / 60)) + ':' + pad(diff % 60);
-}
-
-/* ---------- Weather ---------- */
 function wxInfo(code) {
   if (code === 0) return { ar: 'صحو', icon: 'sun' };
   if (code <= 2) return { ar: 'غائم جزئيًا', icon: 'partly' };
@@ -251,37 +399,139 @@ function wxInfo(code) {
   if (code >= 95) return { ar: 'عواصف رعدية', icon: 'storm' };
   return { ar: '', icon: 'cloud' };
 }
-
-function icon(name) {
-  var sun = '<circle cx="32" cy="32" r="12" fill="#f5c451"/>' +
-    '<g stroke="#f5c451" stroke-width="4" stroke-linecap="round">' +
-    '<line x1="32" y1="4" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="60"/>' +
-    '<line x1="4" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="60" y2="32"/>' +
-    '<line x1="12" y1="12" x2="18" y2="18"/><line x1="46" y1="46" x2="52" y2="52"/>' +
+function wxIcon(name, cls) {
+  var sun = '<circle cx="32" cy="32" r="12" fill="#ffd84d"/><g stroke="#ffd84d" stroke-width="4" stroke-linecap="round">' +
+    '<line x1="32" y1="4" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="60"/><line x1="4" y1="32" x2="12" y2="32"/>' +
+    '<line x1="52" y1="32" x2="60" y2="32"/><line x1="12" y1="12" x2="18" y2="18"/><line x1="46" y1="46" x2="52" y2="52"/>' +
     '<line x1="12" y1="52" x2="18" y2="46"/><line x1="46" y1="18" x2="52" y2="12"/></g>';
-  var cloud = function (fill) {
-    return '<path d="M18 50h30a11 11 0 0 0 0-22 15 15 0 0 0-29-3A12 12 0 0 0 18 50z" fill="' + fill + '"/>';
-  };
-  var body = '';
-  if (name === 'sun') body = sun;
-  else if (name === 'partly') body = '<g transform="translate(-8,-8) scale(0.8)">' + sun + '</g>' + cloud('#c9d3e6');
-  else if (name === 'cloud') body = cloud('#c9d3e6');
-  else if (name === 'fog') body = cloud('#8b98b5') +
-    '<g stroke="#8b98b5" stroke-width="3" stroke-linecap="round"><line x1="12" y1="56" x2="52" y2="56"/><line x1="18" y1="61" x2="46" y2="61"/></g>';
-  else if (name === 'rain') body = '<g transform="translate(0,-6)">' + cloud('#c9d3e6') + '</g>' +
-    '<g stroke="#5fa8f5" stroke-width="3" stroke-linecap="round"><line x1="22" y1="50" x2="19" y2="58"/><line x1="32" y1="50" x2="29" y2="58"/><line x1="42" y1="50" x2="39" y2="58"/></g>';
-  else if (name === 'storm') body = '<g transform="translate(0,-6)">' + cloud('#8b98b5') + '</g>' +
-    '<path d="M34 44l-8 10h6l-4 9 10-12h-6l4-7z" fill="#f5c451"/>';
-  return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">' + body + '</svg>';
+  var cloud = function (f) { return '<path d="M18 50h30a11 11 0 0 0 0-22 15 15 0 0 0-29-3A12 12 0 0 0 18 50z" fill="' + f + '"/>'; };
+  var b = '';
+  if (name === 'sun') b = sun;
+  else if (name === 'partly') b = '<g transform="translate(-8,-8) scale(0.8)">' + sun + '</g>' + cloud('#f2f7ff');
+  else if (name === 'cloud') b = cloud('#e1eaf7');
+  else if (name === 'fog') b = cloud('#c4cfe3') + '<g stroke="#c4cfe3" stroke-width="3" stroke-linecap="round"><line x1="12" y1="56" x2="52" y2="56"/><line x1="18" y1="61" x2="46" y2="61"/></g>';
+  else if (name === 'rain') b = '<g transform="translate(0,-6)">' + cloud('#e1eaf7') + '</g><g stroke="#5fc0ff" stroke-width="3" stroke-linecap="round"><line x1="22" y1="50" x2="19" y2="58"/><line x1="32" y1="50" x2="29" y2="58"/><line x1="42" y1="50" x2="39" y2="58"/></g>';
+  else if (name === 'storm') b = '<g transform="translate(0,-6)">' + cloud('#b9c3d8') + '</g><path d="M34 44l-8 10h6l-4 9 10-12h-6l4-7z" fill="#ffd84d"/>';
+  return '<svg class="' + (cls || '') + '" viewBox="0 0 64 64">' + b + '</svg>';
 }
 
+/* ---------- Prayer times ---------- */
+function loadPrayers() {
+  var n = nowKsa();
+  var dateStr = pad(n.getDate()) + '-' + pad(n.getMonth() + 1) + '-' + n.getFullYear();
+  getJSON('https://api.aladhan.com/v1/timingsByCity/' + dateStr + '?city=' + CITY.name + '&country=' + CITY.country + '&method=4',
+    function (res) {
+      var t = res.data.timings;
+      hijri = res.data.date.hijri;
+      timings = {};
+      for (var i = 0; i < PRAYERS.length; i++) {
+        var parts = t[PRAYERS[i].key].split(' ')[0].split(':');
+        timings[PRAYERS[i].key] = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+      }
+      timingsDay = n.getDate();
+      $('hijri').innerHTML = hijri.day + ' ' + hijri.month.ar + ' ' + hijri.year + ' هـ';
+      renderPrayers();
+      loadRamadan();
+      setStatus('');
+    },
+    function () { setStatus('تعذّر تحميل أوقات الصلاة، بنحاول مرة ثانية…'); setTimeout(loadPrayers, 60000); });
+}
+
+function renderPrayers() {
+  if (!timings) return;
+  var n = nowKsa(), nowMin = n.getHours() * 60 + n.getMinutes(), cur = -1, html = '';
+  for (var i = 0; i < PRAYERS.length; i++) if (timings[PRAYERS[i].key] <= nowMin) cur = i;
+  for (var j = 0; j < PRAYERS.length; j++) {
+    var cls = 'prayer' + (j === cur ? ' current' : (j < cur ? ' past' : ''));
+    html += '<div class="' + cls + '">' + prayerIcon(PRAYERS[j].icon) + '<span class="nm">' + PRAYERS[j].ar +
+      '</span><span class="t">' + to12h(timings[PRAYERS[j].key]) + '</span></div>';
+  }
+  $('prayers').innerHTML = html;
+  updateSky(nowMin);
+}
+
+function updateSky(nowMin) {
+  var t = timings, sky;
+  if (nowMin < t.Fajr || nowMin >= t.Isha) sky = 'sky-night';
+  else if (nowMin < t.Sunrise + 30) sky = 'sky-dawn';
+  else if (nowMin < t.Maghrib - 30) sky = 'sky-day';
+  else sky = 'sky-sunset';
+  if (document.body.className !== sky) document.body.className = sky;
+}
+
+function updateNext() {
+  if (!timings) return;
+  var n = nowKsa(), nowSec = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds(), next = null, diff = 0;
+  for (var i = 0; i < PRAYERS.length; i++) {
+    if (PRAYERS[i].key === 'Sunrise') continue;
+    var s = timings[PRAYERS[i].key] * 60;
+    if (s > nowSec) { next = PRAYERS[i]; diff = s - nowSec; break; }
+  }
+  if (!next) { next = PRAYERS[0]; diff = 86400 - nowSec + timings.Fajr * 60; }
+  $('nextName').innerHTML = next.ar;
+  $('nextAt').innerHTML = 'الساعة ' + to12h(timings[next.key]);
+  $('nextLeft').innerHTML = pad(Math.floor(diff / 3600)) + ':' + pad(Math.floor(diff % 3600 / 60)) + ':' + pad(diff % 60);
+}
+
+/* ---------- Countdowns ---------- */
+function updateHoliday() {
+  for (var i = 0; i < HOLIDAYS.length; i++) {
+    var h = HOLIDAYS[i], toStart = daysUntil(h.start), toEnd = daysUntil(h.end);
+    if (toEnd < 0) continue;
+    if (toStart <= 0) {
+      $('hLbl').innerHTML = 'إجازة سعيدة!';
+      $('hName').innerHTML = h.name;
+      $('hNum').innerHTML = (toEnd + 1) + '<small>' + dayWord(toEnd + 1) + ' باقية</small>';
+      $('hSub').innerHTML = 'الدوام يرجع بعد ' + fmtDate(h.end);
+    } else {
+      $('hLbl').innerHTML = 'الإجازة القادمة';
+      $('hName').innerHTML = h.name;
+      $('hNum').innerHTML = toStart + '<small>' + dayWord(toStart) + '</small>';
+      $('hSub').innerHTML = 'تبدأ ' + fmtDate(h.start) + ' · مكة وجدة والمدينة';
+    }
+    return;
+  }
+  $('hName').innerHTML = 'انتهى تقويم ١٤٤٨';
+  $('hNum').innerHTML = '';
+  $('hSub').innerHTML = 'يحتاج تحديث للسنة الجديدة';
+}
+
+function loadRamadan() {
+  if (!hijri) return;
+  var hy = +hijri.year, hm = +hijri.month.number;
+  var year = hm > 9 ? hy + 1 : hy;
+  if (ramadanStart && ramadanStart.year === year) { updateRamadan(); return; }
+  getJSON('https://api.aladhan.com/v1/hToG/01-09-' + year + '?calendarMethod=UAQ', function (res) {
+    var g = res.data.gregorian.date.split('-'); // DD-MM-YYYY
+    ramadanStart = { year: year, date: g[2] + '-' + g[1] + '-' + g[0] };
+    updateRamadan();
+  }, function () {
+    if (year === RAMADAN_FALLBACK.year) { ramadanStart = RAMADAN_FALLBACK; updateRamadan(); }
+  });
+}
+
+function updateRamadan() {
+  if (!ramadanStart || !hijri) return;
+  if (+hijri.month.number === 9) {
+    $('rLbl').innerHTML = 'رمضان مبارك';
+    $('rNum').innerHTML = (+hijri.day) + '<small>من رمضان</small>';
+    $('rSub').innerHTML = 'تقبّل الله صيامكم وقيامكم';
+    return;
+  }
+  var d = daysUntil(ramadanStart.date);
+  $('rLbl').innerHTML = 'باقي على رمضان';
+  $('rNum').innerHTML = d + '<small>' + dayWord(d) + '</small>';
+  $('rSub').innerHTML = 'يبدأ ' + fmtDate(ramadanStart.date) + ' تقريبًا · ' + ramadanStart.year + ' هـ';
+}
+
+/* ---------- Weather ---------- */
 function loadWeather() {
   var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + CITY.lat + '&longitude=' + CITY.lon +
     '&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m' +
     '&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FRiyadh&forecast_days=5';
   getJSON(url, function (res) {
     var c = res.current, info = wxInfo(c.weather_code);
-    $('wxIcon').innerHTML = icon(info.icon);
+    $('wxIcon').innerHTML = wxIcon(info.icon, 'big');
     $('wxTemp').innerHTML = Math.round(c.temperature_2m) + '°';
     $('wxDesc').innerHTML = info.ar;
     $('wxFeel').innerHTML = Math.round(c.apparent_temperature) + '°';
@@ -289,31 +539,47 @@ function loadWeather() {
     $('wxWind').innerHTML = Math.round(c.wind_speed_10m);
     var d = res.daily, html = '';
     for (var i = 1; i < d.time.length; i++) {
-      var p = d.time[i].split('-');
-      var dow = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10)).getDay();
-      html += '<div class="day"><div class="dn">' + DAYS_AR[dow] + '</div>' + icon(wxInfo(d.weather_code[i]).icon) +
+      var p = d.time[i].split('-'), dow = new Date(+p[0], +p[1] - 1, +p[2]).getDay();
+      html += '<div class="day"><div class="dn">' + DAYS_AR[dow] + '</div>' + wxIcon(wxInfo(d.weather_code[i]).icon) +
         '<div class="hl">' + Math.round(d.temperature_2m_max[i]) + '° <span>' + Math.round(d.temperature_2m_min[i]) + '°</span></div></div>';
     }
     $('days').innerHTML = html;
-  }, function () {
-    setTimeout(loadWeather, 60000);
-  });
+  }, function () { setTimeout(loadWeather, 60000); });
 }
 
 /* ---------- Clock ---------- */
 function tick() {
   var n = nowKsa();
-  var h = n.getHours() % 12; if (h === 0) h = 12;
-  $('hm').innerHTML = h + ':' + pad(n.getMinutes());
+  $('hm').innerHTML = (n.getHours() % 12 || 12) + ':' + pad(n.getMinutes());
   $('sec').innerHTML = pad(n.getSeconds());
   $('ampm').innerHTML = n.getHours() < 12 ? 'ص' : 'م';
-  $('greg').innerHTML = DAYS_AR[n.getDay()] + '، ' + n.getDate() + ' ' + MONTHS_AR[n.getMonth()] + ' ' + n.getFullYear();
-  if (timingsDay !== null && timingsDay !== n.getDate()) { timingsDay = null; loadPrayers(); }
+  $('greg').innerHTML = DAYS_AR[n.getDay()] + '، ' + n.getDate() + ' ' + MONTHS_AR[n.getMonth()] + ' ' + n.getFullYear() + 'م';
+  if (timingsDay !== null && timingsDay !== n.getDate()) { timingsDay = null; loadPrayers(); updateHoliday(); }
   if (n.getSeconds() === 0) renderPrayers();
   updateNext();
 }
 
-// Nudge the whole layout a few pixels every few minutes to avoid screen burn-in.
+/* ---------- Stars ---------- */
+(function () {
+  var html = '';
+  for (var i = 0; i < 60; i++) {
+    html += '<div class="star" style="top:' + (Math.random() * 100) + '%;left:' + (Math.random() * 100) +
+      '%;animation-delay:' + (Math.random() * 3).toFixed(2) + 's"></div>';
+  }
+  $('stars').innerHTML = html;
+})();
+
+/* ---------- Full screen ---------- */
+// The TV browser only allows full screen after a key press, so any remote button switches it on.
+function goFullscreen() {
+  var el = document.documentElement;
+  var req = el.requestFullscreen || el.webkitRequestFullscreen || el.webkitRequestFullScreen;
+  if (req && !(document.fullscreenElement || document.webkitFullscreenElement)) { try { req.call(el); } catch (e) {} }
+}
+document.addEventListener('keydown', goFullscreen);
+document.addEventListener('click', goFullscreen);
+
+// Nudge the layout a few pixels every few minutes to avoid screen burn-in.
 var shifts = [[0, 0], [6, 4], [-6, 4], [6, -4], [-6, -4]], shiftIdx = 0;
 setInterval(function () {
   shiftIdx = (shiftIdx + 1) % shifts.length;
@@ -322,6 +588,7 @@ setInterval(function () {
 
 loadPrayers();
 loadWeather();
+updateHoliday();
 tick();
 setInterval(tick, 1000);
 setInterval(loadWeather, 30 * 60000);
