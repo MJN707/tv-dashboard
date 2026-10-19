@@ -20,7 +20,6 @@
   body {
     color: var(--text);
     font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
-    cursor: none;
     background: #141a4a;
     transition: background 3s ease;
   }
@@ -149,6 +148,47 @@
     background: rgba(0, 0, 0, 0.6); color: #fff; display: none; z-index: 10;
   }
   body.not-fs #fsHint { display: block; }
+  body.overcast .cloud { opacity: 1; }
+  body.overcast.sky-night .cloud { opacity: 0.3; }
+
+  /* ---------- Settings ---------- */
+  #gear {
+    position: absolute; top: 1.4vh; left: 50%; margin-left: -3vh; width: 6vh; height: 6vh; z-index: 20;
+    border-radius: 50%; border: 0; background: rgba(0, 0, 0, 0.35); opacity: 0.45; cursor: pointer;
+    transition: all 0.2s;
+  }
+  #gear svg { width: 3.6vh; height: 3.6vh; }
+  #gear:hover, #gear.focus { opacity: 1; background: var(--gold); transform: scale(1.25); }
+  body.not-fs #gear { top: 8vh; }
+
+  #settings {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; display: none;
+    background: rgba(5, 8, 30, 0.72);
+  }
+  #settings.open { display: block; }
+  .panel {
+    position: absolute; top: 6vh; bottom: 6vh; left: 50%; width: 120vh; margin-left: -60vh;
+    background: linear-gradient(160deg, #22256b, #141743); border: 1px solid var(--card-line);
+    border-radius: 3vh; padding: 3vh 4vh; box-shadow: 0 2vh 6vh rgba(0, 0, 0, 0.5); overflow: hidden;
+  }
+  .panel h1 { font-size: 4vh; font-weight: 900; margin-bottom: 0.4vh; }
+  .panel .help { font-size: 2vh; color: var(--soft); margin-bottom: 2.4vh; }
+  .view { display: none; }
+  .view.active { display: block; }
+  .sec { margin-bottom: 2.6vh; }
+  .sec-title { font-size: 2.6vh; font-weight: 800; color: var(--gold); margin-bottom: 1.2vh; }
+  .chips { display: flex; flex-wrap: wrap; }
+  .chip {
+    font-family: inherit; font-size: 2.6vh; font-weight: 800; color: #fff; cursor: pointer;
+    background: rgba(255, 255, 255, 0.1); border: 0.35vh solid rgba(255, 255, 255, 0.18);
+    border-radius: 1.6vh; padding: 1.2vh 2.6vh; margin: 0 0 1.2vh 1.2vh; transition: transform 0.15s;
+  }
+  .chip.on { background: linear-gradient(90deg, var(--gold2), var(--gold)); color: #3a1d00; border-color: transparent; }
+  .chip.focus, .chip:hover { border-color: #fff; transform: scale(1.08); box-shadow: 0 0 0 0.5vh rgba(255, 255, 255, 0.35); }
+  .chip.city-btn { min-width: 40vh; text-align: right; }
+  .chip.city-btn:after { content: ' \25BE'; }
+  .chip.done { background: #2ecc8f; color: #04281a; border-color: transparent; padding: 1.2vh 6vh; }
+  #cityGrid .chip { width: 17.6vh; text-align: center; padding: 1vh 0.6vh; font-size: 2.2vh; margin: 0 0 1vh 1vh; }
 </style>
 </head>
 <body class="sky-night">
@@ -213,6 +253,42 @@
   <path d="M0 322 Q50 314 100 322 T200 322 T300 322 T400 322 T500 322 T600 322 T700 322 T800 322 T900 322 T1000 322 T1100 322 T1200 322 T1300 322 T1400 322 T1500 322 T1600 322 V340 H0z" fill="url(#sea)"/>
 </svg>
 
+<button id="gear" title="الإعدادات"><svg viewBox="0 0 24 24"><path fill="#fff" d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.6 7.6 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7.6 7.6 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg></button>
+
+<div id="settings">
+  <div class="panel">
+    <div class="view active" id="viewMain">
+      <h1>الإعدادات</h1>
+      <div class="help">تنقّل بالأسهم واختر بزر OK · زر الرجوع للإغلاق</div>
+      <div class="sec">
+        <div class="sec-title">أوقات الصلاة والطقس</div>
+        <div class="chips"><button class="chip city-btn fx" id="cityBtn">جدة</button></div>
+      </div>
+      <div class="sec">
+        <div class="sec-title">التقويم الدراسي</div>
+        <div class="chips">
+          <button class="chip fx" data-set="cal" data-val="rest">كافة مناطق المملكة</button>
+          <button class="chip fx" data-set="cal" data-val="west">المنطقة الغربية (مكة · جدة · المدينة · الطائف)</button>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-title">الخلفية</div>
+        <div class="chips">
+          <button class="chip fx" data-set="theme" data-val="auto">تلقائي (حسب الوقت والجو)</button>
+          <button class="chip fx" data-set="theme" data-val="day">نهار</button>
+          <button class="chip fx" data-set="theme" data-val="night">مساء</button>
+        </div>
+      </div>
+      <div class="chips"><button class="chip done fx" id="doneBtn">تم</button></div>
+    </div>
+    <div class="view" id="viewCity">
+      <h1>اختر مدينتك</h1>
+      <div class="help">تنقّل بالأسهم واختر بزر OK · زر الرجوع للعودة</div>
+      <div class="chips" id="cityGrid"></div>
+    </div>
+  </div>
+</div>
+
 <div id="fsHint">اضغط OK لملء الشاشة · زر البيت للخروج</div>
 <div id="stage">
   <div class="top">
@@ -220,7 +296,7 @@
     <div class="dates">
       <div class="pill" id="hijri">&nbsp;</div>
       <div class="greg" id="greg">&nbsp;</div>
-      <div class="city">جدة · المملكة العربية السعودية</div>
+      <div class="city"><span id="cityName">جدة</span> · المملكة العربية السعودية</div>
     </div>
   </div>
 
@@ -241,7 +317,7 @@
         </div>
       </div>
       <div class="card wx">
-        <h2>الطقس في جدة</h2>
+        <h2>الطقس في <span id="wxCity">جدة</span></h2>
         <div class="wx-now">
           <span id="wxIcon"></span>
           <div><div class="wx-temp" id="wxTemp">--°</div><div class="wx-desc" id="wxDesc">&nbsp;</div></div>
@@ -303,19 +379,73 @@
 
 <script>
 // Written in ES5 with XMLHttpRequest so it runs on the older webOS TV browser.
-var CITY = { name: 'Jeddah', country: 'SA', lat: 21.5433, lon: 39.1728 };
+// [id, Arabic name, latitude, longitude, default school calendar]
+var CITIES = [
+  ['riyadh', 'الرياض', 24.7136, 46.6753, 'rest'], ['jeddah', 'جدة', 21.5433, 39.1728, 'west'],
+  ['makkah', 'مكة المكرمة', 21.3891, 39.8579, 'west'], ['madinah', 'المدينة المنورة', 24.5247, 39.5692, 'west'],
+  ['taif', 'الطائف', 21.2703, 40.4158, 'west'], ['dammam', 'الدمام', 26.4207, 50.0888, 'rest'],
+  ['khobar', 'الخبر', 26.2172, 50.1971, 'rest'], ['dhahran', 'الظهران', 26.2886, 50.1140, 'rest'],
+  ['ahsa', 'الأحساء', 25.3833, 49.5833, 'rest'], ['qatif', 'القطيف', 26.5196, 50.0115, 'rest'],
+  ['jubail', 'الجبيل', 27.0174, 49.6225, 'rest'], ['hafar', 'حفر الباطن', 28.4328, 45.9708, 'rest'],
+  ['kharj', 'الخرج', 24.1556, 47.3120, 'rest'], ['majmaah', 'المجمعة', 25.9039, 45.3456, 'rest'],
+  ['dawadmi', 'الدوادمي', 24.5077, 44.3924, 'rest'], ['dawasir', 'وادي الدواسر', 20.4607, 44.7866, 'rest'],
+  ['buraydah', 'بريدة', 26.3260, 43.9750, 'rest'], ['unaizah', 'عنيزة', 26.0840, 43.9940, 'rest'],
+  ['rass', 'الرس', 25.8694, 43.4973, 'rest'], ['hail', 'حائل', 27.5114, 41.7208, 'rest'],
+  ['tabuk', 'تبوك', 28.3835, 36.5662, 'rest'], ['ula', 'العلا', 26.6085, 37.9232, 'rest'],
+  ['yanbu', 'ينبع', 24.0895, 38.0618, 'rest'], ['rabigh', 'رابغ', 22.7986, 39.0349, 'rest'],
+  ['qunfudhah', 'القنفذة', 19.1264, 41.0789, 'rest'], ['wajh', 'الوجه', 26.2333, 36.4667, 'rest'],
+  ['duba', 'ضباء', 27.3500, 35.6900, 'rest'], ['arar', 'عرعر', 30.9753, 41.0381, 'rest'],
+  ['sakaka', 'سكاكا', 29.9697, 40.2064, 'rest'], ['qurayyat', 'القريات', 31.3317, 37.3428, 'rest'],
+  ['abha', 'أبها', 18.2164, 42.5053, 'rest'], ['khamis', 'خميس مشيط', 18.3000, 42.7333, 'rest'],
+  ['bisha', 'بيشة', 19.9883, 42.6052, 'rest'], ['baha', 'الباحة', 20.0129, 41.4677, 'rest'],
+  ['jazan', 'جازان', 16.8892, 42.5511, 'rest'], ['najran', 'نجران', 17.4924, 44.1277, 'rest'],
+  ['sharurah', 'شرورة', 17.4700, 47.1100, 'rest']
+];
+function cityById(id) {
+  for (var i = 0; i < CITIES.length; i++) if (CITIES[i][0] === id) return CITIES[i];
+  return null;
+}
 var TZ_OFFSET_MIN = 180; // Saudi Arabia, UTC+3, no daylight saving
 
-// School breaks 1448 (2026-2027) for Makkah, Jeddah, Madinah and Taif.
-// start = first day off, end = last day off (inclusive).
-var HOLIDAYS = [
-  { name: 'إجازة الخريف',          start: '2026-11-20', end: '2026-11-28' },
-  { name: 'إجازة منتصف العام',      start: '2027-01-08', end: '2027-01-16' },
-  { name: 'إجازة يوم التأسيس',      start: '2027-02-19', end: '2027-02-22' },
-  { name: 'إجازة عيد الفطر',        start: '2027-02-26', end: '2027-03-13' },
-  { name: 'إجازة عيد الأضحى',       start: '2027-04-30', end: '2027-05-22' },
-  { name: 'إجازة نهاية العام',       start: '2027-07-01', end: '2027-08-28' }
-];
+// School breaks 1448 (2026-2027). start = first day off, end = last day off (inclusive);
+// end is null when the return date has not been announced.
+var CALENDARS = {
+  rest: { label: 'كافة مناطق المملكة', breaks: [
+    { name: 'إجازة الخريف',       start: '2026-11-20', end: '2026-11-28' },
+    { name: 'إجازة منتصف العام',   start: '2027-01-08', end: '2027-01-16' },
+    { name: 'إجازة يوم التأسيس',   start: '2027-02-19', end: '2027-02-22' },
+    { name: 'إجازة عيد الفطر',     start: '2027-02-26', end: '2027-03-13' },
+    { name: 'إجازة عيد الأضحى',    start: '2027-05-07', end: '2027-05-22' },
+    { name: 'إجازة نهاية العام',    start: '2027-06-25', end: null }
+  ] },
+  west: { label: 'المنطقة الغربية', breaks: [
+    { name: 'إجازة الخريف',       start: '2026-11-20', end: '2026-11-28' },
+    { name: 'إجازة منتصف العام',   start: '2027-01-08', end: '2027-01-16' },
+    { name: 'إجازة يوم التأسيس',   start: '2027-02-19', end: '2027-02-22' },
+    { name: 'إجازة عيد الفطر',     start: '2027-02-26', end: '2027-03-13' },
+    { name: 'إجازة عيد الأضحى',    start: '2027-04-30', end: null },
+    { name: 'إجازة نهاية العام',    start: '2027-07-01', end: null }
+  ] }
+};
+
+/* ---------- Settings (saved on this TV) ---------- */
+// cal stays null until chosen by hand, so it follows the city's region.
+var settings = { city: 'jeddah', cal: null, theme: 'auto' };
+try {
+  var saved = JSON.parse(localStorage.getItem('tvDashSettings') || '{}');
+  for (var k in saved) if (saved.hasOwnProperty(k)) settings[k] = saved[k];
+} catch (e) {}
+(function () {
+  var m = /[?&]city=([a-z]+)/.exec(location.search);
+  if (m && cityById(m[1]) && !settings.saved) settings.city = m[1];
+})();
+if (!cityById(settings.city)) settings.city = 'jeddah';
+function city() { var c = cityById(settings.city); return { id: c[0], ar: c[1], lat: c[2], lon: c[3], region: c[4] }; }
+function calKey() { return settings.cal || city().region; }
+function saveSettings() {
+  settings.saved = true;
+  try { localStorage.setItem('tvDashSettings', JSON.stringify(settings)); } catch (e) {}
+}
 var RAMADAN_FALLBACK = { year: 1448, date: '2027-02-08' };
 
 var PRAYERS = [
@@ -426,7 +556,8 @@ function wxIcon(name, cls) {
 function loadPrayers() {
   var n = nowKsa();
   var dateStr = pad(n.getDate()) + '-' + pad(n.getMonth() + 1) + '-' + n.getFullYear();
-  getJSON('https://api.aladhan.com/v1/timingsByCity/' + dateStr + '?city=' + CITY.name + '&country=' + CITY.country + '&method=4',
+  var c = city();
+  getJSON('https://api.aladhan.com/v1/timings/' + dateStr + '?latitude=' + c.lat + '&longitude=' + c.lon + '&method=4',
     function (res) {
       var t = res.data.timings;
       hijri = res.data.date.hijri;
@@ -457,13 +588,19 @@ function renderPrayers() {
   updateSky(nowMin);
 }
 
+var autoSky = 'sky-night', overcast = false;
 function updateSky(nowMin) {
-  var t = timings, sky;
-  if (nowMin < t.Fajr || nowMin >= t.Isha) sky = 'sky-night';
-  else if (nowMin < t.Sunrise + 30) sky = 'sky-dawn';
-  else if (nowMin < t.Maghrib - 30) sky = 'sky-day';
-  else sky = 'sky-sunset';
-  if (document.body.className.indexOf(sky) !== 0) document.body.className = sky + (isFullscreen() ? '' : ' not-fs');
+  var t = timings;
+  if (nowMin < t.Fajr || nowMin >= t.Isha) autoSky = 'sky-night';
+  else if (nowMin < t.Sunrise + 30) autoSky = 'sky-dawn';
+  else if (nowMin < t.Maghrib - 30) autoSky = 'sky-day';
+  else autoSky = 'sky-sunset';
+  applySky();
+}
+function applySky() {
+  var sky = settings.theme === 'day' ? 'sky-day' : settings.theme === 'night' ? 'sky-night' : autoSky;
+  var cls = sky + (settings.theme === 'auto' && overcast ? ' overcast' : '') + (isFullscreen() ? '' : ' not-fs');
+  if (document.body.className !== cls) document.body.className = cls;
 }
 
 function updateNext() {
@@ -482,8 +619,17 @@ function updateNext() {
 
 /* ---------- Countdowns ---------- */
 function updateHoliday() {
-  for (var i = 0; i < HOLIDAYS.length; i++) {
-    var h = HOLIDAYS[i], toStart = daysUntil(h.start), toEnd = daysUntil(h.end);
+  var cal = CALENDARS[calKey()], list = cal.breaks;
+  for (var i = 0; i < list.length; i++) {
+    var h = list[i], toStart = daysUntil(h.start);
+    if (!h.end && toStart <= 0) {
+      $('hLbl').innerHTML = 'إجازة سعيدة!';
+      $('hName').innerHTML = h.name;
+      $('hNum').innerHTML = '';
+      $('hSub').innerHTML = 'موعد العودة لم يُعلن بعد · ' + cal.label;
+      return;
+    }
+    var toEnd = h.end ? daysUntil(h.end) : toStart;
     if (toEnd < 0) continue;
     if (toStart <= 0) {
       $('hLbl').innerHTML = 'إجازة سعيدة!';
@@ -494,7 +640,7 @@ function updateHoliday() {
       $('hLbl').innerHTML = 'الإجازة القادمة';
       $('hName').innerHTML = h.name;
       $('hNum').innerHTML = toStart + '<small>' + dayWord(toStart) + '</small>';
-      $('hSub').innerHTML = 'تبدأ ' + fmtDate(h.start) + ' · مكة وجدة والمدينة';
+      $('hSub').innerHTML = 'تبدأ ' + fmtDate(h.start) + ' · ' + cal.label;
     }
     return;
   }
@@ -533,11 +679,13 @@ function updateRamadan() {
 
 /* ---------- Weather ---------- */
 function loadWeather() {
-  var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + CITY.lat + '&longitude=' + CITY.lon +
+  var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + city().lat + '&longitude=' + city().lon +
     '&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m' +
     '&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FRiyadh&forecast_days=5';
   getJSON(url, function (res) {
     var c = res.current, info = wxInfo(c.weather_code);
+    overcast = c.weather_code >= 3;
+    applySky();
     $('wxIcon').innerHTML = wxIcon(info.icon, 'big');
     $('wxTemp').innerHTML = Math.round(c.temperature_2m) + '°';
     $('wxDesc').innerHTML = info.ar;
@@ -584,14 +732,132 @@ function goFullscreen() {
   if (req && !(document.fullscreenElement || document.webkitFullscreenElement)) { try { req.call(el); } catch (e) {} }
 }
 function isFullscreen() { return !!(document.fullscreenElement || document.webkitFullscreenElement || document.webkitIsFullScreen); }
-function onFsChange() {
-  var c = document.body.className.replace(/\s*not-fs/g, '');
-  document.body.className = isFullscreen() ? c : c + ' not-fs';
+function onFsChange() { applySky(); }
+/* ---------- Settings panel and remote control ---------- */
+var KEY = { LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, OK: 13, BACK: 461, ESC: 27 };
+var focused = null;
+
+function hasClass(el, c) { return (' ' + el.className + ' ').indexOf(' ' + c + ' ') >= 0; }
+function setFocus(el) {
+  if (focused) focused.className = focused.className.replace(/\s*\bfocus\b/g, '');
+  focused = el;
+  if (el) { el.className += ' focus'; if (el.scrollIntoView && el.id !== 'gear') el.scrollIntoView(false); }
 }
-// Only OK (Enter) switches full screen on; Back is left to the browser so it can leave full screen.
+function panelOpen() { return hasClass($('settings'), 'open'); }
+function activeView() { return hasClass($('viewCity'), 'active') ? $('viewCity') : $('viewMain'); }
+function showView(id) {
+  $('viewMain').className = 'view' + (id === 'viewMain' ? ' active' : '');
+  $('viewCity').className = 'view' + (id === 'viewCity' ? ' active' : '');
+}
+
+function refreshPanel() {
+  $('cityBtn').innerHTML = city().ar;
+  var chips = $('viewMain').querySelectorAll('[data-set]');
+  for (var i = 0; i < chips.length; i++) {
+    var ch = chips[i], val = ch.getAttribute('data-set') === 'cal' ? calKey() : settings.theme;
+    ch.className = 'chip fx' + (ch.getAttribute('data-val') === val ? ' on' : '') + (ch === focused ? ' focus' : '');
+  }
+}
+function buildCityGrid() {
+  var html = '';
+  for (var i = 0; i < CITIES.length; i++) html += '<button class="chip fx" data-city="' + CITIES[i][0] + '">' + CITIES[i][1] + '</button>';
+  $('cityGrid').innerHTML = html;
+}
+function openSettings() {
+  refreshPanel(); showView('viewMain');
+  $('settings').className = 'open';
+  setFocus($('cityBtn'));
+}
+function closeSettings() { $('settings').className = ''; setFocus(null); }
+function openCityPicker() {
+  showView('viewCity');
+  var btns = $('cityGrid').querySelectorAll('.chip'), cur = btns[0];
+  for (var i = 0; i < btns.length; i++) {
+    var on = btns[i].getAttribute('data-city') === settings.city;
+    btns[i].className = 'chip fx' + (on ? ' on' : '');
+    if (on) cur = btns[i];
+  }
+  focused = null;
+  setFocus(cur);
+}
+function applyCity() {
+  $('cityName').innerHTML = city().ar;
+  $('wxCity').innerHTML = city().ar;
+  loadPrayers(); loadWeather(); updateHoliday();
+}
+
+function activate(el) {
+  if (!el) return;
+  if (el.id === 'gear') { openSettings(); return; }
+  if (el.id === 'cityBtn') { openCityPicker(); return; }
+  if (el.id === 'doneBtn') { closeSettings(); return; }
+  var cityId = el.getAttribute('data-city');
+  if (cityId) {
+    settings.city = cityId;
+    saveSettings(); applyCity();
+    showView('viewMain'); focused = null; setFocus($('cityBtn')); refreshPanel();
+    return;
+  }
+  var set = el.getAttribute('data-set');
+  if (set) {
+    settings[set] = el.getAttribute('data-val');
+    saveSettings(); refreshPanel();
+    if (set === 'cal') updateHoliday(); else applySky();
+  }
+}
+
+// Move focus to the nearest button in the arrow's direction.
+function moveFocus(dir) {
+  var items = activeView().querySelectorAll('.fx');
+  if (!focused) { setFocus(items[0]); return; }
+  var a = focused.getBoundingClientRect(), ax = a.left + a.width / 2, ay = a.top + a.height / 2;
+  var best = null, bestScore = Infinity;
+  for (var i = 0; i < items.length; i++) {
+    var el = items[i]; if (el === focused) continue;
+    var b = el.getBoundingClientRect(), bx = b.left + b.width / 2, by = b.top + b.height / 2;
+    var dx = bx - ax, dy = by - ay, main, cross;
+    if (dir === KEY.LEFT) { main = -dx; cross = dy; }
+    else if (dir === KEY.RIGHT) { main = dx; cross = dy; }
+    else if (dir === KEY.UP) { main = -dy; cross = dx; }
+    else { main = dy; cross = dx; }
+    if (main <= 2) continue;
+    var score = main + Math.abs(cross) * 2.5;
+    if (score < bestScore) { bestScore = score; best = el; }
+  }
+  if (best) setFocus(best);
+}
+
 document.addEventListener('keydown', function (e) {
-  if (e.keyCode === 13) goFullscreen();
+  var k = e.keyCode;
+  if (panelOpen()) {
+    if (k === KEY.BACK || k === KEY.ESC || k === 8) {
+      e.preventDefault();
+      if (activeView().id === 'viewCity') { showView('viewMain'); focused = null; setFocus($('cityBtn')); }
+      else closeSettings();
+    } else if (k === KEY.OK) { e.preventDefault(); activate(focused); }
+    else if (k >= 37 && k <= 40) { e.preventDefault(); moveFocus(k); }
+    return;
+  }
+  if (k >= 37 && k <= 40) { e.preventDefault(); setFocus($('gear')); return; }
+  if (k === KEY.OK) {
+    goFullscreen();
+    if (focused && focused.id === 'gear') { e.preventDefault(); openSettings(); }
+    return;
+  }
+  if ((k === KEY.BACK || k === KEY.ESC) && focused) setFocus(null);
 });
+
+// Pointer (Magic Remote or mouse)
+document.addEventListener('click', function (e) {
+  var el = e.target;
+  while (el && el !== document.body && el.id !== 'gear' && !(el.className && hasClass(el, 'chip'))) el = el.parentNode;
+  if (el && el !== document.body) { setFocus(el); activate(el); }
+  else if (panelOpen() && e.target === $('settings')) closeSettings();
+});
+
+buildCityGrid();
+$('cityName').innerHTML = city().ar;
+$('wxCity').innerHTML = city().ar;
 document.addEventListener('click', goFullscreen);
 document.addEventListener('fullscreenchange', onFsChange);
 document.addEventListener('webkitfullscreenchange', onFsChange);
