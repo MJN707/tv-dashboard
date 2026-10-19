@@ -1,0 +1,213 @@
+/* Tajawal by Boutros Fonts, SIL Open Font License 1.1, self-hosted */
+@font-face { font-family: 'Tajawal'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url(fonts/tajawal-arabic-400.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1; }
+@font-face { font-family: 'Tajawal'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url(fonts/tajawal-latin-400.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Tajawal'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url(fonts/tajawal-arabic-500.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1; }
+@font-face { font-family: 'Tajawal'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url(fonts/tajawal-latin-500.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Tajawal'; font-style: normal; font-weight: 700; font-display: swap;
+  src: url(fonts/tajawal-arabic-700.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1; }
+@font-face { font-family: 'Tajawal'; font-style: normal; font-weight: 700; font-display: swap;
+  src: url(fonts/tajawal-latin-700.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Tajawal'; font-style: normal; font-weight: 800; font-display: swap;
+  src: url(fonts/tajawal-arabic-800.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1; }
+@font-face { font-family: 'Tajawal'; font-style: normal; font-weight: 800; font-display: swap;
+  src: url(fonts/tajawal-latin-800.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Tajawal'; font-style: normal; font-weight: 900; font-display: swap;
+  src: url(fonts/tajawal-arabic-900.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1; }
+@font-face { font-family: 'Tajawal'; font-style: normal; font-weight: 900; font-display: swap;
+  src: url(fonts/tajawal-latin-900.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+:root {
+  --text: #ffffff;
+  --soft: rgba(255, 255, 255, 0.78);
+  --card: rgba(12, 16, 48, 0.55);
+  --card-line: rgba(255, 255, 255, 0.16);
+  --gold: #ffc94d;
+  --gold2: #ff8f3f;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+body {
+  color: var(--text);
+  font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+  background: #141a4a;
+  transition: background 3s ease;
+}
+/* Sky changes with the time of day */
+body.sky-night  { background: linear-gradient(180deg, #070b2b 0%, #1b1a55 55%, #3b2a78 100%); }
+body.sky-dawn   { background: linear-gradient(180deg, #2b2f7a 0%, #8a5bb0 45%, #ff9e7a 80%, #ffd08a 100%); }
+body.sky-day    { background: linear-gradient(180deg, #1f6fd1 0%, #39a0ec 50%, #8fd6ff 100%); }
+body.sky-sunset { background: linear-gradient(180deg, #2a1f6b 0%, #c2457a 50%, #ff8a4c 78%, #ffc76b 100%); }
+
+/* ---------- Scenery ---------- */
+#stars { position: absolute; top: 0; left: 0; width: 100%; height: 70%; transition: opacity 3s; opacity: 0; }
+body.sky-night #stars { opacity: 1; }
+body.sky-dawn #stars, body.sky-sunset #stars { opacity: 0.35; }
+.star { position: absolute; width: 0.35vh; height: 0.35vh; background: #fff; border-radius: 50%; animation: twinkle 3s infinite ease-in-out; }
+@keyframes twinkle { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+
+#orb { position: absolute; top: 6vh; left: 38%; width: 12vh; height: 12vh; border-radius: 50%; transition: all 3s; }
+body.sky-day #orb    { background: radial-gradient(circle, #fff6c2 0%, #ffd84d 55%, rgba(255, 216, 77, 0) 72%); }
+body.sky-dawn #orb, body.sky-sunset #orb { top: 30vh; background: radial-gradient(circle, #fff1c7 0%, #ffb35a 55%, rgba(255, 140, 70, 0) 72%); }
+body.sky-night #orb  { background: none; }
+#moon { position: absolute; top: 7vh; left: 38%; width: 10vh; height: 10vh; opacity: 0; transition: opacity 3s; }
+body.sky-night #moon { opacity: 1; }
+
+.cloud { position: absolute; opacity: 0.85; animation: drift linear infinite; }
+@keyframes drift { from { transform: translateX(-30vw); } to { transform: translateX(130vw); } }
+body.sky-night .cloud { opacity: 0.18; }
+.cloud-a { top: 9vh; width: 22vh; animation-duration: 140s; animation-delay: -40s; }
+.cloud-b { top: 20vh; width: 15vh; animation-duration: 190s; animation-delay: -120s; }
+
+#skyline { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 34vh; }
+
+/* ---------- Layout ---------- */
+#stage {
+  position: absolute; top: 3vh; bottom: 3vh; left: 2.5vw; right: 2.5vw;
+  display: flex; flex-direction: column;
+  transition: transform 2s ease;
+}
+.top { display: flex; align-items: center; justify-content: space-between; height: 17vh; }
+.clock {
+  direction: ltr; font-weight: 900; font-size: 15vh; line-height: 1;
+  text-shadow: 0 0.6vh 2.4vh rgba(0, 0, 0, 0.35);
+}
+.clock .sec { font-size: 5vh; font-weight: 700; color: var(--soft); margin-left: 1vh; }
+.clock .ampm { font-size: 5vh; font-weight: 800; color: var(--gold); margin-left: 1vh; }
+.dates { text-align: left; }
+.pill {
+  display: inline-block; padding: 0.8vh 2vh; border-radius: 10vh; font-weight: 800;
+  background: linear-gradient(90deg, var(--gold2), var(--gold)); color: #3a1d00; font-size: 3.4vh;
+  box-shadow: 0 0.6vh 2vh rgba(255, 150, 60, 0.4);
+}
+.greg { font-size: 2.8vh; margin-top: 1.2vh; color: var(--text); font-weight: 700; text-shadow: 0 0.3vh 1vh rgba(0,0,0,0.35); }
+.city { font-size: 2.2vh; color: var(--soft); margin-top: 0.4vh; }
+
+.main { flex: 1; display: flex; margin-top: 2vh; min-height: 0; }
+.col { display: flex; flex-direction: column; min-width: 0; }
+.col + .col { margin-right: 1.6vw; }
+.col-prayers { width: 30%; }
+.col-mid { width: 35%; }
+.col-count { flex: 1; }
+.col > .card + .card { margin-top: 1.8vh; }
+
+.card {
+  position: relative; overflow: hidden;
+  background: var(--card); border: 1px solid var(--card-line); border-radius: 2.4vh;
+  padding: 2vh 2.2vh; box-shadow: 0 1vh 3vh rgba(0, 0, 0, 0.25);
+}
+.card h2 { font-size: 2.2vh; font-weight: 700; color: var(--soft); margin-bottom: 1vh; }
+.card .stripe { position: absolute; top: 0; right: 0; left: 0; height: 0.7vh; }
+.stripe-holiday { background: linear-gradient(90deg, #7cf5c8, #4cc3ff); }
+.stripe-ramadan { background: linear-gradient(90deg, #ffc94d, #ff8fd1); }
+
+/* Prayers */
+.col-prayers .card { flex: 1; display: flex; flex-direction: column; }
+.prayers { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.prayer {
+  display: flex; align-items: center; padding: 0.9vh 1.4vh; border-radius: 1.6vh;
+  font-size: 3.3vh; font-weight: 700;
+}
+.prayer .ic { width: 4.4vh; height: 4.4vh; margin-left: 1.4vh; flex-shrink: 0; }
+.prayer .nm { flex: 1; }
+.prayer .t { font-weight: 800; }
+.prayer.past { opacity: 0.5; }
+.prayer.current {
+  background: linear-gradient(90deg, var(--gold2), var(--gold)); color: #3a1d00;
+  box-shadow: 0 0.6vh 2vh rgba(255, 160, 60, 0.45);
+}
+
+/* Next prayer */
+.next { background: linear-gradient(135deg, rgba(255, 143, 63, 0.92), rgba(255, 201, 77, 0.92)); color: #3a1d00; border-color: rgba(255,255,255,0.35); }
+.next h2 { color: rgba(58, 29, 0, 0.75); }
+.next .row { display: flex; align-items: flex-end; justify-content: space-between; }
+.next .name { font-size: 6vh; font-weight: 900; line-height: 1; }
+.next .at { font-size: 2.4vh; font-weight: 700; margin-top: 0.6vh; }
+.next .left { direction: ltr; font-size: 5.4vh; font-weight: 900; line-height: 1; }
+.next .left-lbl { font-size: 2vh; font-weight: 700; text-align: left; margin-bottom: 0.4vh; }
+
+/* Weather */
+.wx { flex: 1; display: flex; flex-direction: column; background: linear-gradient(160deg, rgba(31, 111, 209, 0.75), rgba(16, 30, 90, 0.75)); }
+.wx-now { display: flex; align-items: center; }
+.wx-now .big { width: 11vh; height: 11vh; margin-left: 2vh; }
+.wx-temp { font-size: 9vh; font-weight: 900; line-height: 1; direction: ltr; text-align: right; }
+.wx-desc { font-size: 3vh; font-weight: 800; }
+.wx-meta { display: flex; margin-top: 1.4vh; font-size: 2.2vh; color: var(--soft); }
+.wx-meta div + div { margin-right: 2.4vh; }
+.wx-meta b { color: var(--text); }
+.days { display: flex; margin-top: auto; padding-top: 1.4vh; border-top: 1px solid var(--card-line); }
+.day { flex: 1; text-align: center; }
+.day .dn { font-size: 2vh; color: var(--soft); font-weight: 700; }
+.day svg { width: 5vh; height: 5vh; margin: 0.4vh 0; }
+.day .hl { font-size: 2.3vh; font-weight: 800; }
+.day .hl span { color: var(--soft); font-weight: 500; }
+
+/* Countdowns */
+.count { flex: 1; display: flex; align-items: center; }
+.count .art { width: 15vh; height: 15vh; flex-shrink: 0; margin-left: 2vh; }
+.count .body { flex: 1; min-width: 0; }
+.count .lbl { font-size: 2.2vh; font-weight: 700; color: var(--soft); }
+.count .what { font-size: 3.6vh; font-weight: 900; margin-top: 0.3vh; }
+.count .num { font-size: 8vh; font-weight: 900; line-height: 1.05; }
+.count .num small { font-size: 3vh; font-weight: 800; margin-right: 1vh; }
+.count .sub { font-size: 2vh; color: var(--soft); margin-top: 0.4vh; }
+.holiday { background: linear-gradient(135deg, rgba(0, 168, 150, 0.85), rgba(20, 90, 160, 0.85)); }
+.ramadan { background: linear-gradient(135deg, rgba(116, 52, 196, 0.88), rgba(40, 24, 110, 0.88)); }
+.ramadan .dua { font-size: 2.1vh; color: var(--gold); font-weight: 700; margin-top: 0.8vh; }
+
+.status { position: absolute; bottom: 0; left: 0; font-size: 1.6vh; color: var(--soft); }
+#fsHint {
+  position: absolute; top: 2vh; left: 50%; margin-left: -27vh; width: 54vh; text-align: center;
+  padding: 1vh 2vh; border-radius: 10vh; font-size: 2.4vh; font-weight: 800;
+  background: rgba(0, 0, 0, 0.6); color: #fff; display: none; z-index: 10;
+}
+body.not-fs #fsHint { display: block; }
+body.overcast .cloud { opacity: 1; }
+body.overcast.sky-night .cloud { opacity: 0.3; }
+
+/* ---------- Settings ---------- */
+/* The button stretches to exactly the height of the two date lines beside it */
+.date-row { display: flex; align-items: stretch; margin-top: 1.2vh; }
+.date-row .greg { margin-top: 0; line-height: 3.4vh; }
+.date-row .city { margin-top: 0.4vh; line-height: 2.6vh; }
+/* Same gold as the Hijri pill: round on the right, cut straight on the left */
+#gear {
+  width: 5.4vh; margin-left: 1.6vh; padding: 0; flex-shrink: 0; border: 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 0 6.4vh 6.4vh 0; background: linear-gradient(90deg, var(--gold2), var(--gold));
+  box-shadow: 0 0.6vh 2vh rgba(255, 150, 60, 0.4); transition: transform 0.2s, box-shadow 0.2s;
+}
+#gear svg { width: 3vh; height: 3vh; margin-right: 0.5vh; }
+#gear:hover, #gear.focus { transform: scale(1.1); box-shadow: 0 0 0 0.45vh #fff, 0 0.6vh 2vh rgba(255, 150, 60, 0.6); }
+
+#settings {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; display: none;
+  background: rgba(5, 8, 30, 0.72);
+}
+#settings.open { display: block; }
+.panel {
+  position: absolute; top: 6vh; bottom: 6vh; left: 50%; width: 120vh; margin-left: -60vh;
+  background: linear-gradient(160deg, #22256b, #141743); border: 1px solid var(--card-line);
+  border-radius: 3vh; padding: 3vh 4vh; box-shadow: 0 2vh 6vh rgba(0, 0, 0, 0.5); overflow: hidden;
+}
+.panel h1 { font-size: 4vh; font-weight: 900; margin-bottom: 0.4vh; }
+.panel .help { font-size: 2vh; color: var(--soft); margin-bottom: 2.4vh; }
+.view { display: none; }
+.view.active { display: block; }
+.set-sec { margin-bottom: 2.6vh; }
+.sec-title { font-size: 2.6vh; font-weight: 800; color: var(--gold); margin-bottom: 1.2vh; }
+.chips { display: flex; flex-wrap: wrap; }
+.chip {
+  font-family: inherit; font-size: 2.6vh; font-weight: 800; color: #fff; cursor: pointer;
+  background: rgba(255, 255, 255, 0.1); border: 0.35vh solid rgba(255, 255, 255, 0.18);
+  border-radius: 1.6vh; padding: 1.2vh 2.6vh; margin: 0 0 1.2vh 1.2vh; transition: transform 0.15s;
+}
+.chip.on { background: linear-gradient(90deg, var(--gold2), var(--gold)); color: #3a1d00; border-color: transparent; }
+.chip.focus, .chip:hover { border-color: #fff; transform: scale(1.08); box-shadow: 0 0 0 0.5vh rgba(255, 255, 255, 0.35); }
+.chip.city-btn { min-width: 40vh; text-align: right; }
+.chip.city-btn:after { content: ' \25BE'; }
+.chip.done { background: #2ecc8f; color: #04281a; border-color: transparent; padding: 1.2vh 6vh; }
+#cityGrid .chip { width: 17.6vh; text-align: center; padding: 1vh 0.6vh; font-size: 2.2vh; margin: 0 0 1vh 1vh; }
