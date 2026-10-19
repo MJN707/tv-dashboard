@@ -144,7 +144,7 @@
 
   .status { position: absolute; bottom: 0; left: 0; font-size: 1.6vh; color: var(--soft); }
   #fsHint {
-    position: absolute; top: 2vh; left: 50%; margin-left: -18vh; width: 36vh; text-align: center;
+    position: absolute; top: 2vh; left: 50%; margin-left: -27vh; width: 54vh; text-align: center;
     padding: 1vh 2vh; border-radius: 10vh; font-size: 2.4vh; font-weight: 800;
     background: rgba(0, 0, 0, 0.6); color: #fff; display: none; z-index: 10;
   }
@@ -213,7 +213,7 @@
   <path d="M0 322 Q50 314 100 322 T200 322 T300 322 T400 322 T500 322 T600 322 T700 322 T800 322 T900 322 T1000 322 T1100 322 T1200 322 T1300 322 T1400 322 T1500 322 T1600 322 V340 H0z" fill="url(#sea)"/>
 </svg>
 
-<div id="fsHint">اضغط OK لملء الشاشة</div>
+<div id="fsHint">اضغط OK لملء الشاشة · زر البيت للخروج</div>
 <div id="stage">
   <div class="top">
     <div class="clock"><span id="hm">--:--</span><span class="sec" id="sec">--</span><span class="ampm" id="ampm"></span></div>
@@ -588,11 +588,10 @@ function onFsChange() {
   var c = document.body.className.replace(/\s*not-fs/g, '');
   document.body.className = isFullscreen() ? c : c + ' not-fs';
 }
+// Only OK (Enter) switches full screen on; Back is left to the browser so it can leave full screen.
 document.addEventListener('keydown', function (e) {
-  // 461 is the Back button on LG remotes; keep it from leaving the page or full screen.
-  if (e.keyCode === 461 || e.keyCode === 8) { e.preventDefault(); e.stopPropagation(); }
-  goFullscreen();
-}, true);
+  if (e.keyCode === 13) goFullscreen();
+});
 document.addEventListener('click', goFullscreen);
 document.addEventListener('fullscreenchange', onFsChange);
 document.addEventListener('webkitfullscreenchange', onFsChange);
