@@ -41,27 +41,6 @@ function cityById(id) {
 }
 var TZ_OFFSET_MIN = 180; // Saudi Arabia, UTC+3, no daylight saving
 
-// School breaks 1448 (2026-2027). start = first day off, end = last day off (inclusive);
-// end is null when the return date has not been announced.
-var CALENDARS = {
-  rest: { label: 'كافة مناطق المملكة', breaks: [
-    { name: 'إجازة الخريف',       start: '2026-11-20', end: '2026-11-28' },
-    { name: 'إجازة منتصف العام',   start: '2027-01-08', end: '2027-01-16' },
-    { name: 'إجازة يوم التأسيس',   start: '2027-02-19', end: '2027-02-22' },
-    { name: 'إجازة عيد الفطر',     start: '2027-02-26', end: '2027-03-13' },
-    { name: 'إجازة عيد الأضحى',    start: '2027-05-07', end: '2027-05-22' },
-    { name: 'إجازة نهاية العام',    start: '2027-06-25', end: null }
-  ] },
-  west: { label: 'المنطقة الغربية', breaks: [
-    { name: 'إجازة الخريف',       start: '2026-11-20', end: '2026-11-28' },
-    { name: 'إجازة منتصف العام',   start: '2027-01-08', end: '2027-01-16' },
-    { name: 'إجازة يوم التأسيس',   start: '2027-02-19', end: '2027-02-22' },
-    { name: 'إجازة عيد الفطر',     start: '2027-02-26', end: '2027-03-13' },
-    { name: 'إجازة عيد الأضحى',    start: '2027-04-30', end: null },
-    { name: 'إجازة نهاية العام',    start: '2027-07-01', end: null }
-  ] }
-};
-
 /* ---------- Settings (saved on this TV) ---------- */
 // cal stays null until chosen by hand, so it follows the city's region.
 var settings = { city: 'jeddah', cal: null, theme: 'auto', saved: false };
@@ -293,14 +272,17 @@ function updateNext() {
 function updateHoliday() {
   var cal = CALENDARS[calKey()], list = cal.breaks;
   for (var i = 0; i < list.length; i++) {
-    var h = list[i], toStart = daysUntil(h.start);
-    if (!h.end && toStart <= 0) {
+    var h = list[i], toStart = daysUntil(h.start), isLast = i === list.length - 1;
+    // A break without an announced return date counts as ongoing for two weeks,
+    // or until the calendar gets a later break if it is the last one listed.
+    if (!h.end && toStart <= 0 && (isLast || toStart > -14)) {
       setText('hLbl', 'إجازة سعيدة!');
       setText('hName', h.name);
       setText('hNum', '');
-      setText('hSub', 'موعد العودة لم يُعلن بعد · ' + cal.label);
+      setText('hSub', isLast ? 'تقويم العام الدراسي الجديد لم يُضف بعد' : 'موعد العودة لم يُعلن بعد · ' + cal.label);
       return;
     }
+    if (!h.end && toStart <= 0) continue;
     var toEnd = h.end ? daysUntil(h.end) : toStart;
     if (toEnd < 0) continue;
     if (toStart <= 0) {
@@ -316,9 +298,10 @@ function updateHoliday() {
     }
     return;
   }
-  setText('hName', 'انتهى تقويم ١٤٤٨');
+  setText('hLbl', 'الإجازة القادمة');
+  setText('hName', 'قريبًا');
   setText('hNum', '');
-  setText('hSub', 'يحتاج تحديث للسنة الجديدة');
+  setText('hSub', 'تقويم العام الدراسي الجديد لم يُضف بعد');
 }
 
 function loadRamadan() {
