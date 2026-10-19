@@ -152,14 +152,16 @@
   body.overcast.sky-night .cloud { opacity: 0.3; }
 
   /* ---------- Settings ---------- */
+  .date-row { display: flex; align-items: center; margin-top: 1.2vh; }
+  .date-row .greg { margin-top: 0; }
+  /* Same gold as the Hijri pill: round on the right, cut straight on the left */
   #gear {
-    position: absolute; top: 1.4vh; left: 50%; margin-left: -3vh; width: 6vh; height: 6vh; z-index: 20;
-    border-radius: 50%; border: 0; background: rgba(0, 0, 0, 0.35); opacity: 0.45; cursor: pointer;
-    transition: all 0.2s;
+    width: 7vh; height: 7.4vh; margin-left: 1.6vh; flex-shrink: 0; border: 0; cursor: pointer;
+    border-radius: 0 7vh 7vh 0; background: linear-gradient(90deg, var(--gold2), var(--gold));
+    box-shadow: 0 0.6vh 2vh rgba(255, 150, 60, 0.4); transition: transform 0.2s, box-shadow 0.2s;
   }
-  #gear svg { width: 3.6vh; height: 3.6vh; }
-  #gear:hover, #gear.focus { opacity: 1; background: var(--gold); transform: scale(1.25); }
-  body.not-fs #gear { top: 8vh; }
+  #gear svg { width: 4vh; height: 4vh; margin-right: 0.8vh; }
+  #gear:hover, #gear.focus { transform: scale(1.12); box-shadow: 0 0 0 0.5vh #fff, 0 0.6vh 2vh rgba(255, 150, 60, 0.6); }
 
   #settings {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; display: none;
@@ -253,8 +255,6 @@
   <path d="M0 322 Q50 314 100 322 T200 322 T300 322 T400 322 T500 322 T600 322 T700 322 T800 322 T900 322 T1000 322 T1100 322 T1200 322 T1300 322 T1400 322 T1500 322 T1600 322 V340 H0z" fill="url(#sea)"/>
 </svg>
 
-<button id="gear" title="الإعدادات"><svg viewBox="0 0 24 24"><path fill="#fff" d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.6 7.6 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7.6 7.6 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg></button>
-
 <div id="settings">
   <div class="panel">
     <div class="view active" id="viewMain">
@@ -295,8 +295,13 @@
     <div class="clock"><span id="hm">--:--</span><span class="sec" id="sec">--</span><span class="ampm" id="ampm"></span></div>
     <div class="dates">
       <div class="pill" id="hijri">&nbsp;</div>
-      <div class="greg" id="greg">&nbsp;</div>
-      <div class="city"><span id="cityName">جدة</span> · المملكة العربية السعودية</div>
+      <div class="date-row">
+        <button id="gear" title="الإعدادات"><svg viewBox="0 0 24 24"><path fill="#3a1d00" d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.6 7.6 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7.6 7.6 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg></button>
+        <div>
+          <div class="greg" id="greg">&nbsp;</div>
+          <div class="city"><span id="cityName">جدة</span> · المملكة العربية السعودية</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -383,6 +388,11 @@
 var CITIES = [
   ['riyadh', 'الرياض', 24.7136, 46.6753, 'rest'], ['jeddah', 'جدة', 21.5433, 39.1728, 'west'],
   ['makkah', 'مكة المكرمة', 21.3891, 39.8579, 'west'], ['madinah', 'المدينة المنورة', 24.5247, 39.5692, 'west'],
+  // South
+  ['baha', 'الباحة', 20.0129, 41.4677, 'rest'], ['abha', 'أبها', 18.2164, 42.5053, 'rest'],
+  ['khamis', 'خميس مشيط', 18.3000, 42.7333, 'rest'], ['bisha', 'بيشة', 19.9883, 42.6052, 'rest'],
+  ['jazan', 'جازان', 16.8892, 42.5511, 'rest'], ['najran', 'نجران', 17.4924, 44.1277, 'rest'],
+  ['sharurah', 'شرورة', 17.4700, 47.1100, 'rest'],
   ['taif', 'الطائف', 21.2703, 40.4158, 'west'], ['dammam', 'الدمام', 26.4207, 50.0888, 'rest'],
   ['khobar', 'الخبر', 26.2172, 50.1971, 'rest'], ['dhahran', 'الظهران', 26.2886, 50.1140, 'rest'],
   ['ahsa', 'الأحساء', 25.3833, 49.5833, 'rest'], ['qatif', 'القطيف', 26.5196, 50.0115, 'rest'],
@@ -395,11 +405,7 @@ var CITIES = [
   ['yanbu', 'ينبع', 24.0895, 38.0618, 'rest'], ['rabigh', 'رابغ', 22.7986, 39.0349, 'rest'],
   ['qunfudhah', 'القنفذة', 19.1264, 41.0789, 'rest'], ['wajh', 'الوجه', 26.2333, 36.4667, 'rest'],
   ['duba', 'ضباء', 27.3500, 35.6900, 'rest'], ['arar', 'عرعر', 30.9753, 41.0381, 'rest'],
-  ['sakaka', 'سكاكا', 29.9697, 40.2064, 'rest'], ['qurayyat', 'القريات', 31.3317, 37.3428, 'rest'],
-  ['abha', 'أبها', 18.2164, 42.5053, 'rest'], ['khamis', 'خميس مشيط', 18.3000, 42.7333, 'rest'],
-  ['bisha', 'بيشة', 19.9883, 42.6052, 'rest'], ['baha', 'الباحة', 20.0129, 41.4677, 'rest'],
-  ['jazan', 'جازان', 16.8892, 42.5511, 'rest'], ['najran', 'نجران', 17.4924, 44.1277, 'rest'],
-  ['sharurah', 'شرورة', 17.4700, 47.1100, 'rest']
+  ['sakaka', 'سكاكا', 29.9697, 40.2064, 'rest'], ['qurayyat', 'القريات', 31.3317, 37.3428, 'rest']
 ];
 function cityById(id) {
   for (var i = 0; i < CITIES.length; i++) if (CITIES[i][0] === id) return CITIES[i];
