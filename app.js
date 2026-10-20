@@ -290,7 +290,7 @@ function updateHoliday() {
     if (toStart <= 0) {
       setText('hLbl', 'إجازة سعيدة!');
       setText('hName', h.name);
-      setNum('hNum', toEnd + 1, dayWord(toEnd + 1) + ' باقية');
+      setNum('hNum', toEnd + 1, dayWord(toEnd + 1) + ' متبقية');
       setText('hSub', 'الدوام يرجع بعد ' + fmtDate(h.end));
     } else {
       setText('hLbl', 'الإجازة القادمة');
@@ -330,7 +330,7 @@ function updateRamadan() {
     return;
   }
   var d = daysUntil(ramadanStart.date);
-  setText('rLbl', 'باقي على رمضان');
+  setText('rLbl', 'متبقي على رمضان');
   setNum('rNum', d, dayWord(d));
   setText('rSub', 'يبدأ ' + fmtDate(ramadanStart.date) + ' تقريبًا · ' + ramadanStart.year + ' هـ');
 }
