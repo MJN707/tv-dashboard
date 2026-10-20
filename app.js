@@ -789,8 +789,9 @@ document.addEventListener('keydown', function (e) {
   }
   if (k >= 37 && k <= 40) { e.preventDefault(); setFocus($('gear')); return; }
   if (k === KEY.OK) {
-    goFullscreen();
+    // OK on the settings button opens settings; OK anywhere else switches to full screen.
     if (focused && focused.id === 'gear') { e.preventDefault(); openSettings(); }
+    else goFullscreen();
     return;
   }
   if ((k === KEY.BACK || k === KEY.ESC) && focused) setFocus(null);
@@ -801,14 +802,14 @@ document.addEventListener('click', function (e) {
   var el = e.target;
   while (el && el !== document.body && el.id !== 'gear' && !(el.className && hasClass(el, 'chip'))) el = el.parentNode;
   if (el && el !== document.body) { setFocus(el); activate(el); }
-  else if (panelOpen() && e.target === $('settings')) closeSettings();
+  else if (panelOpen()) { if (e.target === $('settings')) closeSettings(); }
+  else goFullscreen();  // a click on the page itself, not on a button
 });
 
 buildCityGrid();
 buildClubGrid();
 setText('cityName', city().ar);
 setText('wxCity', city().ar);
-document.addEventListener('click', goFullscreen);
 document.addEventListener('fullscreenchange', onFsChange);
 document.addEventListener('webkitfullscreenchange', onFsChange);
 
