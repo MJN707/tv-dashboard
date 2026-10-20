@@ -305,7 +305,7 @@ function renderPrayers() {
   updateSky(nowMin);
 }
 
-var autoSky = 'sky-night', overcast = false;
+var autoSky = 'sky-night', weatherKind = 'clear';
 function updateSky(nowMin) {
   var t = timings;
   // Late at night the automatic theme dims itself, until half an hour before Fajr.
@@ -319,7 +319,7 @@ function updateSky(nowMin) {
 function applySky() {
   var t = settings.theme;
   var sky = t === 'day' ? 'sky-day' : t === 'night' ? 'sky-night' : t === 'dim' ? 'sky-dim' : autoSky;
-  var cls = sky + ' scene-' + settings.scene + (settings.club ? ' has-match' : '') + (t === 'auto' && overcast ? ' overcast' : '') + (isFullscreen() ? '' : ' not-fs');
+  var cls = sky + ' scene-' + settings.scene + (settings.club ? ' has-match' : '') + ' wx-' + weatherKind + (isFullscreen() ? '' : ' not-fs');
   if (document.body.className !== cls) document.body.className = cls;
 }
 
@@ -442,11 +442,28 @@ function loadWeather() {
   var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + city().lat + '&longitude=' + city().lon +
     '&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m' +
     '&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FRiyadh&forecast_days=5';
+  var cityId = city().id;
   getJSON(url, function (res) {
+    renderWeather(res);
+    try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ city: cityId, at: Date.now(), res: res })); } catch (e) {}
+  }, function () {
+    // Service down or no internet: show the last reading for this city if it is under 12 hours old.
+    try {
+      var cached = JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY) || 'null');
+      if (cached && cached.city === cityId && typeof cached.at === 'number' && Date.now() - cached.at < 12 * 3600000) renderWeather(cached.res);
+    } catch (e) {}
+    setTimeout(loadWeather, 60000);
+  });
+}
+
+var WEATHER_CACHE_KEY = 'tvDashWeather';
+function renderWeather(res) {
     var c = res && res.current, d = res && res.daily;
     if (!c || !d || !(d.time instanceof Array)) throw new Error('bad weather data');
+    var today = nowKsa(), todayIso = today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate());
     var code = intIn(c.weather_code, 0, 99), info = wxInfo(code);
-    overcast = code !== null && code >= 3;
+    weatherKind = code === null ? 'clear' : code === 0 ? 'clear' : code <= 2 ? 'partly' : code === 3 ? 'cloudy' :
+      (code === 45 || code === 48) ? 'fog' : 'rain';
     applySky();
     $('wxIcon').innerHTML = wxIcon(info.icon, 'big');
     setText('wxTemp', num(c.temperature_2m) + '°');
@@ -455,16 +472,16 @@ function loadWeather() {
     setText('wxHum', num(c.relative_humidity_2m) + '%');
     setText('wxWind', num(c.wind_speed_10m));
     // Only constants, a validated date and rounded numbers go into this markup.
-    var html = '';
-    for (var i = 1; i < d.time.length && i < 8; i++) {
+    var html = '', shown = 0;
+    for (var i = 0; i < d.time.length && i < 8 && shown < 4; i++) {
       var p = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d.time[i]);
-      if (!p) continue;
+      if (!p || d.time[i] <= todayIso) continue;  // upcoming days only (also right for an older cached copy)
+      shown++;
       var dow = new Date(+p[1], +p[2] - 1, +p[3]).getDay();
       html += '<div class="day"><div class="dn">' + DAYS_AR[dow] + '</div>' + wxIcon(wxInfo(intIn(d.weather_code && d.weather_code[i], 0, 99)).icon) +
         '<div class="hl">' + num(d.temperature_2m_max && d.temperature_2m_max[i]) + '° <span>' + num(d.temperature_2m_min && d.temperature_2m_min[i]) + '°</span></div></div>';
     }
     $('days').innerHTML = html;
-  }, function () { setTimeout(loadWeather, 60000); });
 }
 
 /* ---------- Favourite club: next match ---------- */
@@ -620,6 +637,18 @@ function buildTrees() {
   }
 }
 buildTrees();
+
+/* ---------- Rain drops (only shown when it rains) ---------- */
+(function () {
+  for (var i = 0; i < 46; i++) {
+    var d = document.createElement('div');
+    d.className = 'drop';
+    d.style.left = (Math.random() * 100) + '%';
+    d.style.animationDelay = (Math.random() * 1.2).toFixed(2) + 's';
+    d.style.animationDuration = (0.8 + Math.random() * 0.5).toFixed(2) + 's';
+    $('rain').appendChild(d);
+  }
+})();
 
 /* ---------- Stars ---------- */
 (function () {

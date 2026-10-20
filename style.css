@@ -58,9 +58,36 @@ body.sky-night #moon { opacity: 1; }
 
 .cloud { position: absolute; opacity: 0.85; animation: drift linear infinite; }
 @keyframes drift { from { transform: translateX(-30vw); } to { transform: translateX(130vw); } }
-body.sky-night .cloud { opacity: 0.18; }
+.cloud path { fill: #ffffff; }
 .cloud-a { top: 9vh; width: 22vh; animation-duration: 140s; animation-delay: -40s; }
 .cloud-b { top: 20vh; width: 15vh; animation-duration: 190s; animation-delay: -120s; }
+.cloud-c { top: 4vh; width: 17vh; animation-duration: 165s; animation-delay: -95s; }
+.cloud-d { top: 14vh; width: 27vh; animation-duration: 230s; animation-delay: -15s; }
+.cloud-e { top: 25vh; width: 12vh; animation-duration: 120s; animation-delay: -70s; }
+
+/* ---------- Weather in the sky ---------- */
+#haze { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none; transition: opacity 3s; }
+#rain { position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; display: none; }
+.drop {
+  position: absolute; top: -10vh; width: 0.18vh; height: 6vh;
+  background: linear-gradient(rgba(200, 225, 255, 0), rgba(200, 225, 255, 0.7));
+  animation: fall 1s linear infinite;
+}
+@keyframes fall { from { transform: translateY(0); } to { transform: translateY(115vh); } }
+/* clear: two light clouds; partly: four; cloudy, rain and fog: all five, greyer */
+body.wx-clear .cloud { opacity: 0.6; }
+body.wx-clear .cloud-c, body.wx-clear .cloud-d, body.wx-clear .cloud-e, body.wx-partly .cloud-e { display: none; }
+body.wx-cloudy .cloud, body.wx-rain .cloud, body.wx-fog .cloud { opacity: 0.95; }
+body.wx-cloudy .cloud path { fill: #e6ebf2; }
+body.wx-rain .cloud path { fill: #b9c3d0; }
+body.wx-fog .cloud path { fill: #dfe3e8; }
+body.wx-cloudy #haze, body.wx-rain #haze { display: block; background: rgba(110, 122, 145, 0.28); }
+body.wx-fog #haze { display: block; background: rgba(225, 228, 232, 0.35); }
+body.wx-rain #rain { display: block; }
+body.sky-night .cloud { opacity: 0.18; }
+body.sky-night.wx-cloudy .cloud, body.sky-night.wx-rain .cloud, body.sky-night.wx-fog .cloud { opacity: 0.32; }
+body.sky-night #haze { opacity: 0.6; }
+body.sky-dim #haze, body.sky-dim #rain { display: none; }
 
 #skyline { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 34vh; }
 
@@ -237,8 +264,6 @@ body.sky-dim .art, body.sky-dim .ic, body.sky-dim .wx svg, body.sky-dim .day svg
   background: rgba(0, 0, 0, 0.6); color: #fff; display: none; z-index: 10;
 }
 body.not-fs #fsHint { display: block; }
-body.overcast .cloud { opacity: 1; }
-body.overcast.sky-night .cloud { opacity: 0.3; }
 
 /* ---------- Settings ---------- */
 /* The button stretches to exactly the height of the two date lines beside it */
@@ -263,10 +288,13 @@ body.overcast.sky-night .cloud { opacity: 0.3; }
 /* Calm, muted panel: soft slate-green, sand accents */
 .panel {
   position: absolute; top: 7vh; bottom: 7vh; left: 50%; width: 104vh; margin-left: -52vh;
-  background: #1c2624; border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--p-bg); border: 1px solid var(--p-line);
   border-radius: 2.4vh; padding: 2.6vh 3.4vh; box-shadow: 0 2vh 6vh rgba(0, 0, 0, 0.45);
   overflow-x: hidden; overflow-y: auto;
-  --p-text: #e3e6e1; --p-soft: rgba(227, 230, 225, 0.55); --p-accent: #cdb98a;
+  /* night (default): deep calm indigo with lavender */
+  --p-bg: #1b2038; --p-line: rgba(255, 255, 255, 0.09); --p-text: #e4e5f1; --p-soft: rgba(228, 229, 241, 0.55);
+  --p-accent: #b9b1e6; --p-on: #1d1a36; --p-chip: rgba(255, 255, 255, 0.05); --p-chip-line: rgba(255, 255, 255, 0.1);
+  --p-focus: rgba(255, 255, 255, 0.85); --p-done: #8fa8d8; --p-done-text: #141a33;
   color: var(--p-text);
 }
 .panel h1 { font-size: 3.2vh; font-weight: 800; margin-bottom: 0.3vh; }
@@ -278,15 +306,15 @@ body.overcast.sky-night .cloud { opacity: 0.3; }
 .chips { display: flex; flex-wrap: wrap; }
 .chip {
   font-family: inherit; font-size: 2.15vh; font-weight: 700; color: var(--p-text); cursor: pointer;
-  background: rgba(255, 255, 255, 0.05); border: 0.25vh solid rgba(255, 255, 255, 0.1);
+  background: var(--p-chip); border: 0.25vh solid var(--p-chip-line);
   border-radius: 1.2vh; padding: 0.75vh 1.8vh; margin: 0 0 0.8vh 0.9vh; transition: transform 0.15s;
   line-height: 1.3;
 }
-.chip.on { background: var(--p-accent); color: #26221a; border-color: transparent; }
-.chip.focus, .chip:hover { border-color: rgba(255, 255, 255, 0.85); transform: scale(1.05); box-shadow: 0 0 0 0.4vh rgba(255, 255, 255, 0.18); }
+.chip.on { background: var(--p-accent); color: var(--p-on); border-color: transparent; }
+.chip.focus, .chip:hover { border-color: var(--p-focus); transform: scale(1.05); box-shadow: 0 0 0 0.4vh rgba(255, 255, 255, 0.18); }
 .chip.city-btn { min-width: 28vh; text-align: right; }
 .chip.city-btn:after { content: ' \25BE'; color: var(--p-soft); }
-.chip.done { background: #7fae94; color: #142019; border-color: transparent; padding: 0.9vh 5vh; }
+.chip.done { background: var(--p-done); color: var(--p-done-text); border-color: transparent; padding: 0.9vh 5vh; }
 #cityGrid .chip { width: 16vh; text-align: center; padding: 0.8vh 0.5vh; font-size: 2vh; margin: 0 0 0.8vh 0.8vh; }
 
 /* ---------- Prayer time: announcement and iqama countdown ---------- */
@@ -331,3 +359,18 @@ body.has-match .wx-temp { font-size: 7vh; }
 body.has-match .wx-meta { margin-top: 1vh; }
 body.sky-dim .match { background: var(--card); }
 body.sky-dim .m-teams .fav, body.sky-dim .m-left { color: var(--gold); }
+
+/* Settings panel: light and airy in the daytime themes */
+body.sky-day .panel, body.sky-dawn .panel, body.sky-sunset .panel {
+  --p-bg: #f3f6f2; --p-line: rgba(0, 0, 0, 0.06); --p-text: #24302a; --p-soft: rgba(36, 48, 42, 0.6);
+  --p-accent: #5f9a78; --p-on: #ffffff; --p-chip: rgba(0, 0, 0, 0.035); --p-chip-line: rgba(0, 0, 0, 0.1);
+  --p-focus: rgba(36, 48, 42, 0.7); --p-done: #5f9a78; --p-done-text: #ffffff;
+}
+body.sky-day .sec-title, body.sky-dawn .sec-title, body.sky-sunset .sec-title { color: #4f8466; }
+body.sky-day #settings, body.sky-dawn #settings, body.sky-sunset #settings { background: rgba(0, 0, 0, 0.35); }
+/* Settings panel: the calm slate stays for the dark-room theme */
+body.sky-dim .panel {
+  --p-bg: #1c2624; --p-line: rgba(255, 255, 255, 0.08); --p-text: #e3e6e1; --p-soft: rgba(227, 230, 225, 0.55);
+  --p-accent: #cdb98a; --p-on: #26221a; --p-chip: rgba(255, 255, 255, 0.05); --p-chip-line: rgba(255, 255, 255, 0.1);
+  --p-focus: rgba(255, 255, 255, 0.85); --p-done: #7fae94; --p-done-text: #142019;
+}

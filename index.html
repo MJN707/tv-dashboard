@@ -6,7 +6,7 @@
 <title>شاشة البيت</title>
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src https://api.aladhan.com https://api.open-meteo.com https://www.thesportsdb.com; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
-<link rel="stylesheet" href="style.css?v=20261020b">
+<link rel="stylesheet" href="style.css?v=20261021a">
 </head>
 <body class="sky-night">
 
@@ -14,8 +14,14 @@
 <div id="stars"></div>
 <div id="orb"></div>
 <svg id="moon" viewBox="0 0 100 100"><path d="M62 10a40 40 0 1 0 28 62A34 34 0 1 1 62 10z" fill="#fff3c4"/></svg>
-<svg class="cloud cloud-a" viewBox="0 0 200 80"><path d="M30 70h140a25 25 0 0 0 0-50 35 35 0 0 0-66-8A28 28 0 0 0 30 70z" fill="#fff"/></svg>
-<svg class="cloud cloud-b" viewBox="0 0 200 80"><path d="M30 70h140a25 25 0 0 0 0-50 35 35 0 0 0-66-8A28 28 0 0 0 30 70z" fill="#fff"/></svg>
+<!-- Sky follows the real weather: clear, partly cloudy, cloudy, rain or fog (classes wx-* on body) -->
+<div id="haze"></div>
+<svg class="cloud cloud-a" viewBox="0 0 200 80"><path d="M30 70h140a25 25 0 0 0 0-50 35 35 0 0 0-66-8A28 28 0 0 0 30 70z"/></svg>
+<svg class="cloud cloud-b" viewBox="0 0 200 80"><path d="M30 70h140a25 25 0 0 0 0-50 35 35 0 0 0-66-8A28 28 0 0 0 30 70z"/></svg>
+<svg class="cloud cloud-c" viewBox="0 0 200 80"><path d="M30 70h140a25 25 0 0 0 0-50 35 35 0 0 0-66-8A28 28 0 0 0 30 70z"/></svg>
+<svg class="cloud cloud-d" viewBox="0 0 200 80"><path d="M30 70h140a25 25 0 0 0 0-50 35 35 0 0 0-66-8A28 28 0 0 0 30 70z"/></svg>
+<svg class="cloud cloud-e" viewBox="0 0 200 80"><path d="M30 70h140a25 25 0 0 0 0-50 35 35 0 0 0-66-8A28 28 0 0 0 30 70z"/></svg>
+<div id="rain"></div>
 
 <svg id="skyline" viewBox="0 0 1600 340" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -116,7 +122,7 @@
       <div class="set-sec">
         <div class="sec-title">المنظر</div>
         <div class="chips">
-          <button class="chip fx" data-set="scene" data-val="trees">أشجار وطبيعة</button>
+          <button class="chip fx" data-set="scene" data-val="trees">طبيعة</button>
           <button class="chip fx" data-set="scene" data-val="city">مدينة (الكلاسيكي)</button>
         </div>
       </div>
@@ -238,7 +244,7 @@
   <div class="status" id="status"></div>
 </div>
 
-<script src="calendars.js?v=20261020b"></script>
-<script src="app.js?v=20261020b"></script>
+<script src="calendars.js?v=20261021a"></script>
+<script src="app.js?v=20261021a"></script>
 </body>
 </html>
