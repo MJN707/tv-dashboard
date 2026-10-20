@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>شاشة البيت</title>
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src https://api.aladhan.com https://api.open-meteo.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src https://api.aladhan.com https://api.open-meteo.com https://www.thesportsdb.com; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -86,14 +86,22 @@
       <h1>الإعدادات</h1>
       <div class="help">تنقّل بالأسهم واختر بزر OK · زر الرجوع للإغلاق</div>
       <div class="set-sec">
-        <div class="sec-title">أوقات الصلاة والطقس</div>
-        <div class="chips"><button class="chip city-btn fx" id="cityBtn">جدة</button></div>
+        <div class="sec-title">المدينة والفريق المفضل</div>
+        <div class="chips"><button class="chip city-btn fx" id="cityBtn">جدة</button><button class="chip city-btn fx" id="clubBtn">فريقي: بدون</button></div>
       </div>
       <div class="set-sec">
         <div class="sec-title">التقويم الدراسي</div>
         <div class="chips">
           <button class="chip fx" data-set="cal" data-val="rest">كافة مناطق المملكة</button>
           <button class="chip fx" data-set="cal" data-val="west">المنطقة الغربية (مكة · جدة · المدينة · الطائف)</button>
+        </div>
+      </div>
+      <div class="set-sec">
+        <div class="sec-title">تنبيهات الصلاة</div>
+        <div class="chips">
+          <button class="chip fx" data-set="alerts" data-val="full">تنبيه الأذان وعداد الإقامة</button>
+          <button class="chip fx" data-set="alerts" data-val="iqama">عداد الإقامة فقط</button>
+          <button class="chip fx" data-set="alerts" data-val="off">بدون تنبيهات</button>
         </div>
       </div>
       <div class="set-sec">
@@ -113,6 +121,11 @@
         </div>
       </div>
       <div class="chips"><button class="chip done fx" id="doneBtn">تم</button></div>
+    </div>
+    <div class="view" id="viewClub">
+      <h1>اختر فريقك المفضل</h1>
+      <div class="help">تنقّل بالأسهم واختر بزر OK · زر الرجوع للعودة</div>
+      <div class="chips" id="clubGrid"></div>
     </div>
     <div class="view" id="viewCity">
       <h1>اختر مدينتك</h1>
@@ -168,6 +181,14 @@
           <div>الرياح <b id="wxWind">--</b> كم/س</div>
         </div>
         <div class="days" id="days"></div>
+      </div>
+      <div class="card match" id="matchCard">
+        <div class="stripe stripe-match"></div>
+        <h2><span id="mLbl">المباراة القادمة</span> · <span id="mClub"></span></h2>
+        <div class="m-row">
+          <div class="m-body"><div class="m-teams" id="mTeams">…</div><div class="m-when" id="mWhen"></div></div>
+          <div class="m-left" id="mLeft"></div>
+        </div>
       </div>
     </div>
 

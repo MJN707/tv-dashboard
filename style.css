@@ -266,20 +266,20 @@ body.overcast.sky-night .cloud { opacity: 0.3; }
   border-radius: 3vh; padding: 3vh 4vh; box-shadow: 0 2vh 6vh rgba(0, 0, 0, 0.5); overflow: hidden;
 }
 .panel h1 { font-size: 4vh; font-weight: 900; margin-bottom: 0.4vh; }
-.panel .help { font-size: 2vh; color: var(--soft); margin-bottom: 2.4vh; }
+.panel .help { font-size: 2vh; color: var(--soft); margin-bottom: 1.8vh; }
 .view { display: none; }
 .view.active { display: block; }
-.set-sec { margin-bottom: 2.6vh; }
-.sec-title { font-size: 2.6vh; font-weight: 800; color: var(--gold); margin-bottom: 1.2vh; }
+.set-sec { margin-bottom: 1.8vh; }
+.sec-title { font-size: 2.3vh; font-weight: 800; color: var(--gold); margin-bottom: 0.8vh; }
 .chips { display: flex; flex-wrap: wrap; }
 .chip {
-  font-family: inherit; font-size: 2.6vh; font-weight: 800; color: #fff; cursor: pointer;
+  font-family: inherit; font-size: 2.3vh; font-weight: 800; color: #fff; cursor: pointer;
   background: rgba(255, 255, 255, 0.1); border: 0.35vh solid rgba(255, 255, 255, 0.18);
-  border-radius: 1.6vh; padding: 1.2vh 2.6vh; margin: 0 0 1.2vh 1.2vh; transition: transform 0.15s;
+  border-radius: 1.6vh; padding: 0.9vh 2.2vh; margin: 0 0 0.9vh 1.1vh; transition: transform 0.15s;
 }
 .chip.on { background: linear-gradient(90deg, var(--gold2), var(--gold)); color: #3a1d00; border-color: transparent; }
 .chip.focus, .chip:hover { border-color: #fff; transform: scale(1.08); box-shadow: 0 0 0 0.5vh rgba(255, 255, 255, 0.35); }
-.chip.city-btn { min-width: 40vh; text-align: right; }
+.chip.city-btn { min-width: 34vh; text-align: right; }
 .chip.city-btn:after { content: ' \25BE'; }
 .chip.done { background: #2ecc8f; color: #04281a; border-color: transparent; padding: 1.2vh 6vh; }
 #cityGrid .chip { width: 17.6vh; text-align: center; padding: 1vh 0.6vh; font-size: 2.2vh; margin: 0 0 1vh 1vh; }
@@ -303,3 +303,26 @@ body.overcast.sky-night .cloud { opacity: 0.3; }
 body.sky-dim #adhan { background: rgba(0, 0, 0, 0.6); }
 body.sky-dim .adhan-box { background: #15130f; color: var(--gold); box-shadow: none; border: 1px solid rgba(179, 144, 79, 0.3); }
 body.sky-dim .next.now { animation: none; }
+
+/* ---------- Favourite club: next match (shares the weather column) ---------- */
+#clubGrid .chip { width: 17.6vh; text-align: center; padding: 1vh 0.6vh; font-size: 2.2vh; margin: 0 0 1vh 1vh; }
+.match { display: none; }
+body.has-match .match { display: flex; flex-direction: column; flex: 1; margin-top: 1.8vh;
+  background: linear-gradient(135deg, rgba(18, 140, 82, 0.85), rgba(12, 70, 60, 0.85)); }
+.stripe-match { background: linear-gradient(90deg, #ffe066, #7cf5c8); }
+.match h2 { margin-bottom: 0.6vh; }
+.m-row { flex: 1; display: flex; align-items: center; }
+.m-body { flex: 1; min-width: 0; }
+.m-teams { font-size: 3.6vh; font-weight: 900; line-height: 1.2; }
+.m-teams .fav { color: var(--gold); }
+.m-teams .vs { color: var(--soft); font-weight: 500; }
+.m-when { font-size: 1.9vh; color: var(--soft); margin-top: 0.6vh; }
+.m-left { font-size: 5vh; font-weight: 900; text-align: left; margin-right: 1.6vh; white-space: nowrap; }
+.m-left small { display: block; font-size: 1.9vh; font-weight: 700; color: var(--soft); text-align: left; }
+/* Weather gets half the column when the match card is shown */
+body.has-match .wx .days { display: none; }
+body.has-match .wx-now .big { width: 8vh; height: 8vh; }
+body.has-match .wx-temp { font-size: 7vh; }
+body.has-match .wx-meta { margin-top: 1vh; }
+body.sky-dim .match { background: var(--card); }
+body.sky-dim .m-teams .fav, body.sky-dim .m-left { color: var(--gold); }

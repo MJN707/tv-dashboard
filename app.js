@@ -35,6 +35,27 @@ var CITIES = [
   ['duba', 'ضباء', 27.3500, 35.6900, 'rest'], ['arar', 'عرعر', 30.9753, 41.0381, 'rest'],
   ['sakaka', 'سكاكا', 29.9697, 40.2064, 'rest'], ['qurayyat', 'القريات', 31.3317, 37.3428, 'rest']
 ];
+// Saudi Pro League clubs offered in the "favourite club" list: [TheSportsDB team id, Arabic name].
+var CLUBS = [
+  ['136022', 'النصر'], ['137721', 'الأهلي'], ['136018', 'الاتحاد'], ['136015', 'القادسية'],
+  ['136017', 'الاتفاق'], ['136020', 'الشباب'], ['136012', 'التعاون'], ['136011', 'الفتح'],
+  ['139080', 'الخليج'], ['136014', 'الفيحاء'], ['147445', 'الرياض'], ['149112', 'الخلود'],
+  ['136200', 'الحزم'], ['150637', 'نيوم'], ['137855', 'أبها'], ['136021', 'الفيصلي'],
+  ['152917', 'الدرعية']
+];
+// Arabic names for opponents that are not in the list above.
+var OTHER_TEAMS_AR = { '136013': 'الهلال' };
+function clubById(id) {
+  for (var i = 0; i < CLUBS.length; i++) if (CLUBS[i][0] === id) return CLUBS[i];
+  return null;
+}
+var COMPETITIONS_AR = {
+  'Saudi-Arabian Pro League': 'دوري روشن السعودي',
+  'Saudi King Cup': 'كأس خادم الحرمين الشريفين',
+  'Saudi Super Cup': 'كأس السوبر السعودي',
+  'AFC Champions League Elite': 'دوري أبطال آسيا للنخبة',
+  'AFC Champions League Two': 'دوري أبطال آسيا 2'
+};
 function cityById(id) {
   for (var i = 0; i < CITIES.length; i++) if (CITIES[i][0] === id) return CITIES[i];
   return null;
@@ -43,8 +64,8 @@ var TZ_OFFSET_MIN = 180; // Saudi Arabia, UTC+3, no daylight saving
 
 /* ---------- Settings (saved on this TV) ---------- */
 // cal stays null until chosen by hand, so it follows the city's region.
-var settings = { city: 'jeddah', cal: null, theme: 'auto', scene: 'trees', saved: false };
-var ALLOWED = { cal: { rest: 1, west: 1 }, theme: { auto: 1, day: 1, night: 1, dim: 1 }, scene: { trees: 1, city: 1 } };
+var settings = { city: 'jeddah', cal: null, theme: 'auto', scene: 'trees', alerts: 'full', club: '', saved: false };
+var ALLOWED = { cal: { rest: 1, west: 1 }, theme: { auto: 1, day: 1, night: 1, dim: 1 }, scene: { trees: 1, city: 1 }, alerts: { full: 1, iqama: 1, off: 1 } };
 function allowed(name, val) { return typeof val === 'string' && ALLOWED[name].hasOwnProperty(val); }
 
 // Only known values are taken from storage or the link; anything else is ignored.
@@ -55,6 +76,8 @@ try {
     if (allowed('cal', saved.cal)) settings.cal = saved.cal;
     if (allowed('theme', saved.theme)) settings.theme = saved.theme;
     if (allowed('scene', saved.scene)) settings.scene = saved.scene;
+    if (allowed('alerts', saved.alerts)) settings.alerts = saved.alerts;
+    if (typeof saved.club === 'string' && clubById(saved.club)) settings.club = saved.club;
     settings.saved = saved.saved === true;
   }
 } catch (e) {}
@@ -67,7 +90,7 @@ function calKey() { return settings.cal || city().region; }
 function saveSettings() {
   settings.saved = true;
   try {
-    localStorage.setItem('tvDashSettings', JSON.stringify({ city: settings.city, cal: settings.cal, theme: settings.theme, scene: settings.scene, saved: true }));
+    localStorage.setItem('tvDashSettings', JSON.stringify({ city: settings.city, cal: settings.cal, theme: settings.theme, scene: settings.scene, alerts: settings.alerts, club: settings.club, saved: true }));
   } catch (e) {}
 }
 var RAMADAN_FALLBACK = { year: 1448, date: '2027-02-08' };
@@ -296,7 +319,7 @@ function updateSky(nowMin) {
 function applySky() {
   var t = settings.theme;
   var sky = t === 'day' ? 'sky-day' : t === 'night' ? 'sky-night' : t === 'dim' ? 'sky-dim' : autoSky;
-  var cls = sky + ' scene-' + settings.scene + (t === 'auto' && overcast ? ' overcast' : '') + (isFullscreen() ? '' : ' not-fs');
+  var cls = sky + ' scene-' + settings.scene + (settings.club ? ' has-match' : '') + (t === 'auto' && overcast ? ' overcast' : '') + (isFullscreen() ? '' : ' not-fs');
   if (document.body.className !== cls) document.body.className = cls;
 }
 
@@ -304,7 +327,7 @@ function updateNext() {
   if (!timings) return;
   var n = nowKsa(), nowSec = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds(), next = null, diff = 0;
   // From adhan until iqama: announce the prayer and count down to the iqama.
-  for (var k = 0; k < PRAYERS.length; k++) {
+  for (var k = 0; k < PRAYERS.length && settings.alerts !== 'off'; k++) {
     var p = PRAYERS[k];
     if (p.key === 'Sunrise') continue;
     var jumuah = p.key === 'Dhuhr' && n.getDay() === 5;
@@ -340,7 +363,7 @@ function showPrayerNow(p, jumuah, toIqama, sinceAdhan) {
     setText('nextLeft', pad(Math.floor(toIqama / 60)) + ':' + pad(toIqama % 60));
   }
   // Big announcement for the first minute after the adhan.
-  showAdhan(sinceAdhan < 60 ? prayerName(p) : null);
+  showAdhan(sinceAdhan < 60 && settings.alerts === 'full' ? prayerName(p) : null);
 }
 function showAdhan(name) {
   var el = $('adhan');
@@ -444,6 +467,74 @@ function loadWeather() {
   }, function () { setTimeout(loadWeather, 60000); });
 }
 
+/* ---------- Favourite club: next match ---------- */
+var match = null, matchFetchedAt = 0;
+var MATCH_LENGTH_MS = 2.25 * 3600000;  // treat a match as live for about 2h15m after kick-off
+
+// Arabic name for a team id, or the given English name reduced to safe plain text.
+function teamName(id, fallback) {
+  var c = clubById(String(id));
+  if (c) return c[1];
+  if (OTHER_TEAMS_AR.hasOwnProperty(String(id))) return OTHER_TEAMS_AR[String(id)];
+  return String(fallback || '').replace(/[^\w \-.'؀-ۿ]/g, '').slice(0, 40) || '—';
+}
+function competitionName(s) {
+  s = String(s || '');
+  return COMPETITIONS_AR.hasOwnProperty(s) ? COMPETITIONS_AR[s] : s.replace(/[^\w \-.']/g, '').slice(0, 50);
+}
+
+function loadMatch() {
+  var id = settings.club;
+  if (!id) { match = null; renderMatch(); return; }
+  matchFetchedAt = Date.now();
+  getJSON('https://www.thesportsdb.com/api/v1/json/123/eventsnext.php?id=' + encodeURIComponent(id), function (res) {
+    if (settings.club !== id) return;  // the club was changed meanwhile
+    var e = res && res.events instanceof Array ? res.events[0] : null;
+    if (!e) { match = { none: true }; renderMatch(); return; }
+    var t = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(e.strTimestamp);
+    if (!t || !/^\d{1,8}$/.test(String(e.idHomeTeam)) || !/^\d{1,8}$/.test(String(e.idAwayTeam))) throw new Error('bad match data');
+    match = {
+      ts: Date.UTC(+t[1], +t[2] - 1, +t[3], +t[4], +t[5]),  // TheSportsDB timestamps are UTC
+      homeId: String(e.idHomeTeam), awayId: String(e.idAwayTeam),
+      home: teamName(e.idHomeTeam, e.strHomeTeam), away: teamName(e.idAwayTeam, e.strAwayTeam),
+      comp: competitionName(e.strLeague)
+    };
+    renderMatch();
+  }, function () { setTimeout(loadMatch, 10 * 60000); });
+}
+
+function renderMatch() {
+  if (!settings.club) return;
+  var club = clubById(settings.club);
+  setText('mClub', club ? club[1] : '');
+  if (!match) { setText('mLbl', 'المباراة القادمة'); setText('mTeams', '…'); setText('mWhen', ''); setText('mLeft', ''); return; }
+  if (match.none) { setText('mLbl', 'المباراة القادمة'); setText('mTeams', 'لا توجد مباراة قادمة معلنة'); setText('mWhen', ''); setText('mLeft', ''); return; }
+  // Teams, with the favourite club highlighted
+  var teams = $('mTeams'), h = document.createElement('span'), v = document.createElement('span'), a = document.createElement('span');
+  h.textContent = match.home; a.textContent = match.away; v.textContent = ' × '; v.className = 'vs';
+  if (match.homeId === settings.club) h.className = 'fav';
+  if (match.awayId === settings.club) a.className = 'fav';
+  teams.textContent = ''; teams.appendChild(h); teams.appendChild(v); teams.appendChild(a);
+  // Kick-off in Saudi time
+  var k = new Date(match.ts + TZ_OFFSET_MIN * 60000);
+  var hh = k.getUTCHours(), mm = k.getUTCMinutes();
+  setText('mWhen', DAYS_AR[k.getUTCDay()] + ' ' + k.getUTCDate() + ' ' + MONTHS_AR[k.getUTCMonth()] + ' · ' +
+    (hh % 12 || 12) + ':' + pad(mm) + (hh < 12 ? ' ص' : ' م') + (match.comp ? ' · ' + match.comp : ''));
+  var diff = match.ts - Date.now();
+  if (diff > 0) {
+    setText('mLbl', 'المباراة القادمة');
+    var mins = Math.ceil(diff / 60000), days = Math.floor(mins / 1440);
+    if (days >= 1) setNum('mLeft', days, dayWord(days) + ' متبقية');
+    else setNum('mLeft', Math.floor(mins / 60) + ':' + pad(mins % 60), 'متبقي');
+  } else if (-diff < MATCH_LENGTH_MS) {
+    setText('mLbl', 'المباراة جارية الآن');
+    setText('mLeft', 'مباشر');
+  } else {
+    // The match is over: fetch the next one (at most every 10 minutes).
+    if (Date.now() - matchFetchedAt > 10 * 60000) loadMatch();
+  }
+}
+
 /* ---------- Clock ---------- */
 function tick() {
   var n = nowKsa();
@@ -452,7 +543,7 @@ function tick() {
   setText('ampm', n.getHours() < 12 ? 'ص' : 'م');
   setText('greg', DAYS_AR[n.getDay()] + '، ' + n.getDate() + ' ' + MONTHS_AR[n.getMonth()] + ' ' + n.getFullYear() + 'م');
   if (timingsDay !== null && timingsDay !== n.getDate()) { timingsDay = null; loadPrayers(); updateHoliday(); }
-  if (n.getSeconds() === 0) renderPrayers();
+  if (n.getSeconds() === 0) { renderPrayers(); renderMatch(); }
   updateNext();
 }
 
@@ -562,14 +653,18 @@ function setFocus(el) {
   if (el) { el.className += ' focus'; if (el.scrollIntoView && el.id !== 'gear') el.scrollIntoView(false); }
 }
 function panelOpen() { return hasClass($('settings'), 'open'); }
-function activeView() { return hasClass($('viewCity'), 'active') ? $('viewCity') : $('viewMain'); }
+var VIEWS = ['viewMain', 'viewCity', 'viewClub'];
+function activeView() {
+  for (var i = 1; i < VIEWS.length; i++) if (hasClass($(VIEWS[i]), 'active')) return $(VIEWS[i]);
+  return $('viewMain');
+}
 function showView(id) {
-  $('viewMain').className = 'view' + (id === 'viewMain' ? ' active' : '');
-  $('viewCity').className = 'view' + (id === 'viewCity' ? ' active' : '');
+  for (var i = 0; i < VIEWS.length; i++) $(VIEWS[i]).className = 'view' + (VIEWS[i] === id ? ' active' : '');
 }
 
 function refreshPanel() {
   setText('cityBtn', city().ar);
+  setText('clubBtn', settings.club ? 'فريقي: ' + clubById(settings.club)[1] : 'فريقي: بدون');
   var chips = $('viewMain').querySelectorAll('[data-set]');
   for (var i = 0; i < chips.length; i++) {
     var ch = chips[i], set = ch.getAttribute('data-set'), val = set === 'cal' ? calKey() : settings[set];
@@ -584,6 +679,28 @@ function buildCityGrid() {
     b.textContent = CITIES[i][1];
     $('cityGrid').appendChild(b);
   }
+}
+function buildClubGrid() {
+  var list = [['none', 'بدون فريق']].concat(CLUBS);
+  for (var i = 0; i < list.length; i++) {
+    var b = document.createElement('button');
+    b.className = 'chip fx';
+    b.setAttribute('data-club', list[i][0]);
+    b.textContent = list[i][1];
+    $('clubGrid').appendChild(b);
+  }
+}
+function openClubPicker() {
+  showView('viewClub');
+  var btns = $('clubGrid').querySelectorAll('.chip'), cur = btns[0];
+  for (var i = 0; i < btns.length; i++) {
+    var id = btns[i].getAttribute('data-club');
+    var on = id === (settings.club || 'none');
+    btns[i].className = 'chip fx' + (on ? ' on' : '');
+    if (on) cur = btns[i];
+  }
+  focused = null;
+  setFocus(cur);
 }
 function openSettings() {
   refreshPanel(); showView('viewMain');
@@ -612,6 +729,14 @@ function activate(el) {
   if (!el) return;
   if (el.id === 'gear') { openSettings(); return; }
   if (el.id === 'cityBtn') { openCityPicker(); return; }
+  if (el.id === 'clubBtn') { openClubPicker(); return; }
+  var clubId = el.getAttribute('data-club');
+  if (clubId && (clubId === 'none' || clubById(clubId))) {
+    settings.club = clubId === 'none' ? '' : clubId;
+    saveSettings(); match = null; applySky(); loadMatch();
+    showView('viewMain'); focused = null; setFocus($('clubBtn')); refreshPanel();
+    return;
+  }
   if (el.id === 'doneBtn') { closeSettings(); return; }
   var cityId = el.getAttribute('data-city');
   if (cityId && cityById(cityId)) {
@@ -622,7 +747,7 @@ function activate(el) {
   }
   var set = el.getAttribute('data-set');
   var val = el.getAttribute('data-val');
-  if ((set === 'cal' || set === 'theme' || set === 'scene') && allowed(set, val)) {
+  if ((set === 'cal' || set === 'theme' || set === 'scene' || set === 'alerts') && allowed(set, val)) {
     settings[set] = val;
     saveSettings(); refreshPanel();
     if (set === 'cal') updateHoliday(); else applySky();
@@ -655,7 +780,8 @@ document.addEventListener('keydown', function (e) {
   if (panelOpen()) {
     if (k === KEY.BACK || k === KEY.ESC || k === 8) {
       e.preventDefault();
-      if (activeView().id === 'viewCity') { showView('viewMain'); focused = null; setFocus($('cityBtn')); }
+      var sub = activeView().id;
+      if (sub !== 'viewMain') { showView('viewMain'); focused = null; setFocus($(sub === 'viewClub' ? 'clubBtn' : 'cityBtn')); }
       else closeSettings();
     } else if (k === KEY.OK) { e.preventDefault(); activate(focused); }
     else if (k >= 37 && k <= 40) { e.preventDefault(); moveFocus(k); }
@@ -679,6 +805,7 @@ document.addEventListener('click', function (e) {
 });
 
 buildCityGrid();
+buildClubGrid();
 setText('cityName', city().ar);
 setText('wxCity', city().ar);
 document.addEventListener('click', goFullscreen);
@@ -699,4 +826,6 @@ updateHoliday();
 tick();
 setInterval(tick, 1000);
 setInterval(loadWeather, 30 * 60000);
+loadMatch();
+setInterval(loadMatch, 3 * 3600000);
 setTimeout(function () { location.reload(); }, 6 * 3600000);
