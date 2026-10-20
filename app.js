@@ -200,29 +200,71 @@ function wxIcon(name, cls) {
 }
 
 /* ---------- Prayer times ---------- */
+// Minutes from adhan to iqama, as commonly used in Saudi mosques.
+var IQAMA_MIN = { Fajr: 25, Dhuhr: 20, Asr: 20, Maghrib: 10, Isha: 20 };
+var JUMUAH_MIN = 30;  // how long the Friday "it's time" state stays up
+function isFriday() { return nowKsa().getDay() === 5; }
+function prayerName(p) { return p.key === 'Dhuhr' && isFriday() ? 'الجمعة' : p.ar; }
+
+// Validate one day's timings and Hijri date; returns { t, h } or null.
+function parseDay(t, h) {
+  if (!t || !h) return null;
+  var parsed = {};
+  for (var i = 0; i < PRAYERS.length; i++) {
+    var raw = t[PRAYERS[i].key];
+    var v = typeof raw === 'number' ? intIn(raw, 0, 1439) : parseHM(raw);
+    if (v === null) return null;
+    parsed[PRAYERS[i].key] = v;
+  }
+  var hm = h.month && typeof h.month === 'object' ? h.month.number : h.month;
+  var hd = intIn(h.day, 1, 30), hmo = intIn(hm, 1, 12), hy = intIn(h.year, 1400, 1700);
+  if (hd === null || hmo === null || hy === null) return null;
+  return { t: parsed, h: { day: hd, month: hmo, year: hy } };
+}
+
+// A month of prayer times is kept in this browser, so the page keeps working without internet.
+var PRAYER_CACHE_KEY = 'tvDashPrayers';
+function readPrayerDay(cityId, y, m, d) {
+  try {
+    var c = JSON.parse(localStorage.getItem(PRAYER_CACHE_KEY) || 'null');
+    if (!c || c.city !== cityId || c.y !== y || c.m !== m || !c.days || typeof c.days !== 'object') return null;
+    var e = c.days[d];
+    return e ? parseDay(e.t, e.h) : null;
+  } catch (e2) { return null; }
+}
+function savePrayerMonth(cityId, y, m, days) {
+  try { localStorage.setItem(PRAYER_CACHE_KEY, JSON.stringify({ city: cityId, y: y, m: m, days: days })); } catch (e) {}
+}
+
+function applyDay(d, day) {
+  timings = d.t;
+  hijri = d.h;
+  timingsDay = day;
+  setText('hijri', hijri.day + ' ' + HIJRI_MONTHS_AR[hijri.month - 1] + ' ' + hijri.year + ' هـ');
+  renderPrayers();
+  loadRamadan();
+  setStatus('');
+}
+
 function loadPrayers() {
-  var n = nowKsa();
-  var dateStr = pad(n.getDate()) + '-' + pad(n.getMonth() + 1) + '-' + n.getFullYear();
-  var c = city();
-  getJSON('https://api.aladhan.com/v1/timings/' + dateStr + '?latitude=' + c.lat + '&longitude=' + c.lon + '&method=4',
+  var n = nowKsa(), c = city(), y = n.getFullYear(), m = n.getMonth() + 1, day = n.getDate();
+  var cached = readPrayerDay(c.id, y, m, day);
+  if (cached) { applyDay(cached, day); return; }
+  getJSON('https://api.aladhan.com/v1/calendar/' + y + '/' + m + '?latitude=' + c.lat + '&longitude=' + c.lon + '&method=4',
     function (res) {
       // Validate everything before using it; a bad or tampered response is treated as a failure.
-      var t = res && res.data && res.data.timings, h = res && res.data && res.data.date && res.data.date.hijri;
-      if (!t || !h || !h.month) throw new Error('bad prayer data');
-      var parsed = {};
-      for (var i = 0; i < PRAYERS.length; i++) {
-        parsed[PRAYERS[i].key] = parseHM(t[PRAYERS[i].key]);
-        if (parsed[PRAYERS[i].key] === null) throw new Error('bad time');
+      if (!res || !(res.data instanceof Array)) throw new Error('bad prayer data');
+      var days = {};
+      for (var i = 0; i < res.data.length && i < 31; i++) {
+        var item = res.data[i] || {}, date = item.date || {};
+        var g = /^(\d{2})-(\d{2})-(\d{4})$/.exec(date.gregorian && date.gregorian.date);
+        if (!g || +g[2] !== m || +g[3] !== y) continue;
+        var parsed = parseDay(item.timings, date.hijri);
+        if (parsed) days[+g[1]] = parsed;
       }
-      var hd = intIn(h.day, 1, 30), hm = intIn(h.month.number, 1, 12), hy = intIn(h.year, 1400, 1700);
-      if (hd === null || hm === null || hy === null) throw new Error('bad hijri date');
-      timings = parsed;
-      hijri = { day: hd, month: hm, year: hy };
-      timingsDay = n.getDate();
-      setText('hijri', hd + ' ' + HIJRI_MONTHS_AR[hm - 1] + ' ' + hy + ' هـ');
-      renderPrayers();
-      loadRamadan();
-      setStatus('');
+      if (!days[day]) throw new Error('today missing');
+      savePrayerMonth(c.id, y, m, days);
+      applyDay(days[day], day);
     },
     function () { setStatus('تعذّر تحميل أوقات الصلاة، بنحاول مرة ثانية…'); setTimeout(loadPrayers, 60000); });
 }
@@ -233,7 +275,7 @@ function renderPrayers() {
   for (var i = 0; i < PRAYERS.length; i++) if (timings[PRAYERS[i].key] <= nowMin) cur = i;
   for (var j = 0; j < PRAYERS.length; j++) {
     var cls = 'prayer' + (j === cur ? ' current' : (j < cur ? ' past' : ''));
-    html += '<div class="' + cls + '">' + prayerIcon(PRAYERS[j].icon) + '<span class="nm">' + PRAYERS[j].ar +
+    html += '<div class="' + cls + '">' + prayerIcon(PRAYERS[j].icon) + '<span class="nm">' + prayerName(PRAYERS[j]) +
       '</span><span class="t">' + to12h(timings[PRAYERS[j].key]) + '</span></div>';
   }
   $('prayers').innerHTML = html;
@@ -243,7 +285,9 @@ function renderPrayers() {
 var autoSky = 'sky-night', overcast = false;
 function updateSky(nowMin) {
   var t = timings;
-  if (nowMin < t.Fajr || nowMin >= t.Isha) autoSky = 'sky-night';
+  // Late at night the automatic theme dims itself, until half an hour before Fajr.
+  if (nowMin >= 23 * 60 || nowMin < t.Fajr - 30) autoSky = 'sky-dim';
+  else if (nowMin < t.Fajr || nowMin >= t.Isha) autoSky = 'sky-night';
   else if (nowMin < t.Sunrise + 30) autoSky = 'sky-dawn';
   else if (nowMin < t.Maghrib - 30) autoSky = 'sky-day';
   else autoSky = 'sky-sunset';
@@ -259,15 +303,50 @@ function applySky() {
 function updateNext() {
   if (!timings) return;
   var n = nowKsa(), nowSec = n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds(), next = null, diff = 0;
+  // From adhan until iqama: announce the prayer and count down to the iqama.
+  for (var k = 0; k < PRAYERS.length; k++) {
+    var p = PRAYERS[k];
+    if (p.key === 'Sunrise') continue;
+    var jumuah = p.key === 'Dhuhr' && n.getDay() === 5;
+    var start = timings[p.key] * 60, win = (jumuah ? JUMUAH_MIN : IQAMA_MIN[p.key]) * 60;
+    if (nowSec >= start && nowSec < start + win) { showPrayerNow(p, jumuah, start + win - nowSec, nowSec - start); return; }
+  }
+  showAdhan(null);
+  $('nextCard').className = 'card next';
+  setText('nextTitle', 'الصلاة القادمة');
+  setText('nextLeftLbl', 'متبقي');
   for (var i = 0; i < PRAYERS.length; i++) {
     if (PRAYERS[i].key === 'Sunrise') continue;
     var s = timings[PRAYERS[i].key] * 60;
     if (s > nowSec) { next = PRAYERS[i]; diff = s - nowSec; break; }
   }
   if (!next) { next = PRAYERS[0]; diff = 86400 - nowSec + timings.Fajr * 60; }
-  setText('nextName', next.ar);
+  setText('nextName', prayerName(next));
   $('nextAt').innerHTML = 'الساعة ' + to12h(timings[next.key]);
   setText('nextLeft', pad(Math.floor(diff / 3600)) + ':' + pad(Math.floor(diff % 3600 / 60)) + ':' + pad(diff % 60));
+}
+
+function showPrayerNow(p, jumuah, toIqama, sinceAdhan) {
+  $('nextCard').className = 'card next now';
+  setText('nextTitle', 'حان الآن وقت صلاة');
+  setText('nextName', prayerName(p));
+  if (jumuah) {
+    setText('nextAt', 'تقبّل الله منا ومنكم');
+    setText('nextLeftLbl', '');
+    setText('nextLeft', '');
+  } else {
+    setText('nextAt', 'الإقامة بعد ' + IQAMA_MIN[p.key] + ' دقيقة من الأذان');
+    setText('nextLeftLbl', 'متبقي على الإقامة');
+    setText('nextLeft', pad(Math.floor(toIqama / 60)) + ':' + pad(toIqama % 60));
+  }
+  // Big announcement for the first minute after the adhan.
+  showAdhan(sinceAdhan < 60 ? prayerName(p) : null);
+}
+function showAdhan(name) {
+  var el = $('adhan');
+  if (!name) { if (el.className) el.className = ''; return; }
+  setText('adhanName', name);
+  el.className = 'show';
 }
 
 /* ---------- Countdowns ---------- */

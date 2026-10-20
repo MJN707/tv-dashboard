@@ -283,3 +283,23 @@ body.overcast.sky-night .cloud { opacity: 0.3; }
 .chip.city-btn:after { content: ' \25BE'; }
 .chip.done { background: #2ecc8f; color: #04281a; border-color: transparent; padding: 1.2vh 6vh; }
 #cityGrid .chip { width: 17.6vh; text-align: center; padding: 1vh 0.6vh; font-size: 2.2vh; margin: 0 0 1vh 1vh; }
+
+/* ---------- Prayer time: announcement and iqama countdown ---------- */
+.next.now { animation: glow 2.4s ease-in-out infinite; }
+@keyframes glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 201, 77, 0); } 50% { box-shadow: 0 0 0 1vh rgba(255, 201, 77, 0.35); } }
+#adhan {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 25; display: none;
+  background: rgba(5, 8, 30, 0.55); pointer-events: none;
+}
+#adhan.show { display: block; animation: fadein 1s ease; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+.adhan-box {
+  position: absolute; top: 50%; left: 50%; width: 90vh; margin-left: -45vh; margin-top: -16vh; text-align: center;
+  padding: 4vh 3vh; border-radius: 3vh; color: #3a1d00;
+  background: linear-gradient(135deg, var(--gold2), var(--gold)); box-shadow: 0 2vh 6vh rgba(0, 0, 0, 0.45);
+}
+.adhan-lbl { font-size: 4vh; font-weight: 800; }
+.adhan-name { font-size: 12vh; font-weight: 900; line-height: 1.15; }
+body.sky-dim #adhan { background: rgba(0, 0, 0, 0.6); }
+body.sky-dim .adhan-box { background: #15130f; color: var(--gold); box-shadow: none; border: 1px solid rgba(179, 144, 79, 0.3); }
+body.sky-dim .next.now { animation: none; }
