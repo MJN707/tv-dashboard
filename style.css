@@ -64,6 +64,78 @@ body.sky-night .cloud { opacity: 0.18; }
 
 #skyline { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 34vh; }
 
+/* ---------- Scenes: city skyline (classic) or trees ---------- */
+#trees { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 46vh; display: none; }
+body.scene-trees #trees { display: block; }
+body.scene-trees #skyline { display: none; }
+
+/* Tree colours, daytime by default */
+.t-hill1 { fill: #8fd48a; }
+.t-hill2 { fill: #5fbf68; }
+.t-far { fill: #4fa463; }
+.t-leaf1 { fill: #34a058; }
+.t-leaf2 { fill: #74d27e; }
+.t-cyp { fill: #2b8a50; }
+.t-trunk { fill: #7a5235; }
+.t-palm { fill: #2f8a4a; }
+.t-bush { fill: #3fae5c; }
+.t-grass { fill: #4cb35a; }
+.t-flower-a { fill: #ff8fb1; }
+.t-flower-b { fill: #ffe066; }
+.t-flower-c { fill: #ffffff; }
+body.sky-dawn .t-hill1, body.sky-sunset .t-hill1 { fill: #6fae7e; }
+body.sky-dawn .t-hill2, body.sky-sunset .t-hill2 { fill: #4f9a66; }
+body.sky-dawn .t-far, body.sky-sunset .t-far { fill: #3f7f5c; }
+body.sky-dawn .t-leaf1, body.sky-sunset .t-leaf1 { fill: #2f7a50; }
+body.sky-dawn .t-leaf2, body.sky-sunset .t-leaf2 { fill: #5fae6e; }
+body.sky-dawn .t-cyp, body.sky-sunset .t-cyp { fill: #24683f; }
+body.sky-dawn .t-grass, body.sky-sunset .t-grass, body.sky-dawn .t-bush, body.sky-sunset .t-bush { fill: #3a8a4c; }
+body.sky-night .t-hill1 { fill: #1a3a3f; }
+body.sky-night .t-hill2 { fill: #143036; }
+body.sky-night .t-far { fill: #12313a; }
+body.sky-night .t-leaf1 { fill: #164038; }
+body.sky-night .t-leaf2 { fill: #22574a; }
+body.sky-night .t-cyp { fill: #11362f; }
+body.sky-night .t-trunk { fill: #2a2230; }
+body.sky-night .t-palm { fill: #133a33; }
+body.sky-night .t-bush, body.sky-night .t-grass { fill: #10302c; }
+body.sky-night .t-flower-a, body.sky-night .t-flower-b, body.sky-night .t-flower-c { opacity: 0.35; }
+
+/* Leaves drift gently, like a light breeze */
+.sway { animation: sway 7s ease-in-out infinite; }
+.sway-b { animation-duration: 9s; animation-delay: -3s; }
+.sway-c { animation-duration: 8s; animation-delay: -5s; }
+@keyframes sway { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(3px); } }
+
+/* ---------- Dark-room theme: very low light, muted colours ---------- */
+body.sky-dim {
+  background: #030405;
+  --text: #8c93a0;
+  --soft: rgba(140, 147, 160, 0.6);
+  --card: rgba(255, 255, 255, 0.035);
+  --card-line: rgba(255, 255, 255, 0.07);
+  --gold: #b3904f;
+  --gold2: #8c6a33;
+}
+body.sky-dim #stars, body.sky-dim #orb, body.sky-dim .cloud { display: none; }
+body.sky-dim #moon { opacity: 0.35; }
+body.sky-dim #skyline, body.sky-dim #trees { opacity: 0.06; }
+body.sky-dim #fsHint { background: rgba(255, 255, 255, 0.05); color: var(--soft); }
+body.sky-dim .clock, body.sky-dim .greg { text-shadow: none; }
+body.sky-dim .clock { color: #9aa1ad; }
+body.sky-dim .pill, body.sky-dim #gear {
+  background: rgba(179, 144, 79, 0.16); color: var(--gold); box-shadow: none;
+}
+body.sky-dim #gear svg path { fill: var(--gold); }
+body.sky-dim .next, body.sky-dim .wx, body.sky-dim .holiday, body.sky-dim .ramadan {
+  background: var(--card); color: var(--text); box-shadow: none;
+}
+body.sky-dim .next h2 { color: var(--soft); }
+body.sky-dim .next .name, body.sky-dim .next .left { color: var(--gold); }
+body.sky-dim .card .stripe { opacity: 0.25; }
+body.sky-dim .prayer.current { background: rgba(179, 144, 79, 0.16); color: var(--gold); box-shadow: none; }
+body.sky-dim .art, body.sky-dim .ic, body.sky-dim .wx svg, body.sky-dim .day svg { opacity: 0.45; }
+
 /* ---------- Layout ---------- */
 #stage {
   position: absolute; top: 3vh; bottom: 3vh; left: 2.5vw; right: 2.5vw;

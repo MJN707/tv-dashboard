@@ -43,8 +43,8 @@ var TZ_OFFSET_MIN = 180; // Saudi Arabia, UTC+3, no daylight saving
 
 /* ---------- Settings (saved on this TV) ---------- */
 // cal stays null until chosen by hand, so it follows the city's region.
-var settings = { city: 'jeddah', cal: null, theme: 'auto', saved: false };
-var ALLOWED = { cal: { rest: 1, west: 1 }, theme: { auto: 1, day: 1, night: 1 } };
+var settings = { city: 'jeddah', cal: null, theme: 'auto', scene: 'trees', saved: false };
+var ALLOWED = { cal: { rest: 1, west: 1 }, theme: { auto: 1, day: 1, night: 1, dim: 1 }, scene: { trees: 1, city: 1 } };
 function allowed(name, val) { return typeof val === 'string' && ALLOWED[name].hasOwnProperty(val); }
 
 // Only known values are taken from storage or the link; anything else is ignored.
@@ -54,6 +54,7 @@ try {
     if (typeof saved.city === 'string' && cityById(saved.city)) settings.city = saved.city;
     if (allowed('cal', saved.cal)) settings.cal = saved.cal;
     if (allowed('theme', saved.theme)) settings.theme = saved.theme;
+    if (allowed('scene', saved.scene)) settings.scene = saved.scene;
     settings.saved = saved.saved === true;
   }
 } catch (e) {}
@@ -66,7 +67,7 @@ function calKey() { return settings.cal || city().region; }
 function saveSettings() {
   settings.saved = true;
   try {
-    localStorage.setItem('tvDashSettings', JSON.stringify({ city: settings.city, cal: settings.cal, theme: settings.theme, saved: true }));
+    localStorage.setItem('tvDashSettings', JSON.stringify({ city: settings.city, cal: settings.cal, theme: settings.theme, scene: settings.scene, saved: true }));
   } catch (e) {}
 }
 var RAMADAN_FALLBACK = { year: 1448, date: '2027-02-08' };
@@ -249,8 +250,9 @@ function updateSky(nowMin) {
   applySky();
 }
 function applySky() {
-  var sky = settings.theme === 'day' ? 'sky-day' : settings.theme === 'night' ? 'sky-night' : autoSky;
-  var cls = sky + (settings.theme === 'auto' && overcast ? ' overcast' : '') + (isFullscreen() ? '' : ' not-fs');
+  var t = settings.theme;
+  var sky = t === 'day' ? 'sky-day' : t === 'night' ? 'sky-night' : t === 'dim' ? 'sky-dim' : autoSky;
+  var cls = sky + ' scene-' + settings.scene + (t === 'auto' && overcast ? ' overcast' : '') + (isFullscreen() ? '' : ' not-fs');
   if (document.body.className !== cls) document.body.className = cls;
 }
 
@@ -375,6 +377,80 @@ function tick() {
   updateNext();
 }
 
+/* ---------- Trees scene ---------- */
+var SVG_NS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs, parent) {
+  var el = document.createElementNS(SVG_NS, tag);
+  for (var a in attrs) if (attrs.hasOwnProperty(a)) el.setAttribute(a, attrs[a]);
+  if (parent) parent.appendChild(el);
+  return el;
+}
+// A round leafy tree standing on (x, base), s = scale.
+function roundTree(g, x, base, s, sway) {
+  svgEl('rect', { 'class': 't-trunk', x: x - 7 * s, y: base - 95 * s, width: 14 * s, height: 95 * s, rx: 4 * s }, g);
+  var crown = svgEl('g', { 'class': 'sway ' + sway }, g);
+  var c = [[0, -150, 52], [-38, -122, 40], [40, -124, 42], [0, -190, 38], [-30, -170, 30], [32, -168, 30]];
+  for (var i = 0; i < c.length; i++) svgEl('circle', { 'class': 't-leaf1', cx: x + c[i][0] * s, cy: base + c[i][1] * s, r: c[i][2] * s }, crown);
+  var hl = [[-14, -168, 20], [20, -146, 16], [-30, -128, 14]];
+  for (var j = 0; j < hl.length; j++) svgEl('circle', { 'class': 't-leaf2', cx: x + hl[j][0] * s, cy: base + hl[j][1] * s, r: hl[j][2] * s }, crown);
+}
+// A tall slim cypress.
+function cypress(g, x, base, s, sway) {
+  svgEl('rect', { 'class': 't-trunk', x: x - 4 * s, y: base - 30 * s, width: 8 * s, height: 30 * s }, g);
+  var crown = svgEl('g', { 'class': 'sway ' + sway }, g);
+  svgEl('ellipse', { 'class': 't-cyp', cx: x, cy: base - 110 * s, rx: 26 * s, ry: 90 * s }, crown);
+  svgEl('ellipse', { 'class': 't-leaf2', cx: x - 8 * s, cy: base - 130 * s, rx: 8 * s, ry: 50 * s, opacity: 0.5 }, crown);
+}
+// A date palm.
+function palm(g, x, base, s, sway) {
+  svgEl('path', { 'class': 't-trunk', d: 'M' + (x - 6 * s) + ' ' + base + ' Q' + (x - 2 * s) + ' ' + (base - 90 * s) + ' ' + (x + 6 * s) + ' ' + (base - 170 * s) +
+    ' L' + (x + 14 * s) + ' ' + (base - 170 * s) + ' Q' + (x + 8 * s) + ' ' + (base - 90 * s) + ' ' + (x + 8 * s) + ' ' + base + ' Z' }, g);
+  var top = svgEl('g', { 'class': 'sway ' + sway }, g);
+  var cx = x + 10 * s, cy = base - 172 * s;
+  var fronds = [[-80, 20], [-70, -18], [-35, -45], [80, 20], [70, -18], [35, -45], [0, -55]];
+  for (var i = 0; i < fronds.length; i++) {
+    var ex = cx + fronds[i][0] * s, ey = cy + fronds[i][1] * s;
+    var mx = cx + fronds[i][0] * 0.5 * s, my = cy + fronds[i][1] * 0.5 * s - 22 * s;
+    svgEl('path', { 'class': 't-palm', d: 'M' + cx + ' ' + cy + ' Q' + mx + ' ' + my + ' ' + ex + ' ' + ey +
+      ' Q' + (mx + 4 * s) + ' ' + (my + 14 * s) + ' ' + cx + ' ' + (cy + 6 * s) + ' Z' }, top);
+  }
+  svgEl('circle', { 'class': 't-flower-b', cx: cx - 6 * s, cy: cy + 8 * s, r: 5 * s, opacity: 0.8 }, top);
+  svgEl('circle', { 'class': 't-flower-b', cx: cx + 5 * s, cy: cy + 10 * s, r: 5 * s, opacity: 0.8 }, top);
+}
+function bush(g, x, base, s) {
+  svgEl('circle', { 'class': 't-bush', cx: x - 22 * s, cy: base - 12 * s, r: 22 * s }, g);
+  svgEl('circle', { 'class': 't-bush', cx: x + 20 * s, cy: base - 10 * s, r: 20 * s }, g);
+  svgEl('circle', { 'class': 't-leaf2', cx: x, cy: base - 26 * s, r: 24 * s }, g);
+}
+function buildTrees() {
+  var far = $('treesFar'), mid = $('treesMid'), front = $('treesFront');
+  // A soft line of distant trees along the back hill
+  for (var x = 10; x < 1600; x += 46) {
+    var h = 18 + (x * 7) % 14;
+    svgEl('circle', { 'class': 't-far', cx: x, cy: 246 - h, r: h }, far);
+    svgEl('circle', { 'class': 't-far', cx: x + 20, cy: 252 - h * 0.7, r: h * 0.8 }, far);
+  }
+  palm(mid, 30, 334, 0.95, 'sway-b');
+  roundTree(mid, 140, 334, 1.2, '');
+  roundTree(mid, 340, 330, 0.9, 'sway-c');
+  cypress(mid, 470, 332, 1.0, 'sway-b');
+  roundTree(mid, 620, 334, 1.3, '');
+  palm(mid, 770, 334, 1.1, 'sway-c');
+  roundTree(mid, 910, 332, 1.0, 'sway-b');
+  roundTree(mid, 1130, 334, 1.4, 'sway-c');
+  cypress(mid, 1275, 330, 0.9, '');
+  roundTree(mid, 1400, 334, 1.1, 'sway-b');
+  palm(mid, 1530, 334, 1.0, '');
+  var bushes = [60, 255, 520, 700, 845, 1050, 1210, 1335, 1585];
+  for (var i = 0; i < bushes.length; i++) bush(front, bushes[i], 346, 0.8 + (i % 3) * 0.15);
+  var colours = ['t-flower-a', 't-flower-b', 't-flower-c'];
+  for (var f = 0; f < 46; f++) {
+    var fx = (f * 137) % 1600, fy = 342 + (f * 53) % 14;
+    svgEl('circle', { 'class': colours[f % 3], cx: fx, cy: fy, r: 3 + (f % 2) }, front);
+  }
+}
+buildTrees();
+
 /* ---------- Stars ---------- */
 (function () {
   for (var i = 0; i < 60; i++) {
@@ -417,7 +493,7 @@ function refreshPanel() {
   setText('cityBtn', city().ar);
   var chips = $('viewMain').querySelectorAll('[data-set]');
   for (var i = 0; i < chips.length; i++) {
-    var ch = chips[i], val = ch.getAttribute('data-set') === 'cal' ? calKey() : settings.theme;
+    var ch = chips[i], set = ch.getAttribute('data-set'), val = set === 'cal' ? calKey() : settings[set];
     ch.className = 'chip fx' + (ch.getAttribute('data-val') === val ? ' on' : '') + (ch === focused ? ' focus' : '');
   }
 }
@@ -467,7 +543,7 @@ function activate(el) {
   }
   var set = el.getAttribute('data-set');
   var val = el.getAttribute('data-val');
-  if ((set === 'cal' || set === 'theme') && allowed(set, val)) {
+  if ((set === 'cal' || set === 'theme' || set === 'scene') && allowed(set, val)) {
     settings[set] = val;
     saveSettings(); refreshPanel();
     if (set === 'cal') updateHoliday(); else applySky();

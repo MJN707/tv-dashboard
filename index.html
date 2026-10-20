@@ -70,6 +70,16 @@
   <path d="M0 322 Q50 314 100 322 T200 322 T300 322 T400 322 T500 322 T600 322 T700 322 T800 322 T900 322 T1000 322 T1100 322 T1200 322 T1300 322 T1400 322 T1500 322 T1600 322 V340 H0z" fill="url(#sea)"/>
 </svg>
 
+<!-- Trees scene: hills here, trees and bushes are added by app.js -->
+<svg id="trees" viewBox="0 0 1600 360" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+  <path class="t-hill1" d="M0 250 C200 200 380 215 560 240 C760 268 940 205 1140 220 C1320 233 1460 205 1600 225 V360 H0z"/>
+  <g id="treesFar"></g>
+  <path class="t-hill2" d="M0 300 C180 275 360 290 560 300 C760 312 980 280 1200 292 C1380 302 1500 285 1600 292 V360 H0z"/>
+  <g id="treesMid"></g>
+  <path class="t-grass" d="M0 338 C200 326 420 334 640 336 C880 338 1100 324 1340 332 C1460 336 1540 330 1600 332 V360 H0z"/>
+  <g id="treesFront"></g>
+</svg>
+
 <div id="settings">
   <div class="panel">
     <div class="view active" id="viewMain">
@@ -92,6 +102,14 @@
           <button class="chip fx" data-set="theme" data-val="auto">تلقائي (حسب الوقت والجو)</button>
           <button class="chip fx" data-set="theme" data-val="day">نهار</button>
           <button class="chip fx" data-set="theme" data-val="night">مساء</button>
+          <button class="chip fx" data-set="theme" data-val="dim">غرفة مظلمة</button>
+        </div>
+      </div>
+      <div class="set-sec">
+        <div class="sec-title">المنظر</div>
+        <div class="chips">
+          <button class="chip fx" data-set="scene" data-val="trees">أشجار وطبيعة</button>
+          <button class="chip fx" data-set="scene" data-val="city">مدينة (الكلاسيكي)</button>
         </div>
       </div>
       <div class="chips"><button class="chip done fx" id="doneBtn">تم</button></div>
