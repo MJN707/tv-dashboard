@@ -151,12 +151,9 @@ function fmtDate(iso) {
   var p = iso.split('-'), d = new Date(+p[0], +p[1] - 1, +p[2]);
   return DAYS_AR[d.getDay()] + ' ' + (+p[2]) + ' ' + MONTHS_AR[+p[1] - 1];
 }
-function dayWord(n) {
-  if (n === 1) return 'يوم واحد';
-  if (n === 2) return 'يومين';
-  if (n >= 3 && n <= 10) return 'أيام';
-  return 'يوم';
-}
+// Unit shown after a big number: "2 يوم", "5 أيام", "30 يوم".
+function dayWord(n) { return n >= 3 && n <= 10 ? 'أيام' : 'يوم'; }
+function daysLeftWord(n) { return n >= 3 && n <= 10 ? 'أيام متبقية' : 'يوم متبقي'; }
 function to12h(mins) {
   var h = Math.floor(mins / 60), m = mins % 60, h12 = h % 12 || 12;
   return '<span dir="ltr">' + h12 + ':' + pad(m) + '</span> ' + (h < 12 ? 'ص' : 'م');
@@ -393,7 +390,7 @@ function updateHoliday() {
     if (toStart <= 0) {
       setText('hLbl', 'إجازة سعيدة!');
       setText('hName', h.name);
-      setNum('hNum', toEnd + 1, dayWord(toEnd + 1) + ' متبقية');
+      setNum('hNum', toEnd + 1, daysLeftWord(toEnd + 1));
       setText('hSub', 'الدوام يرجع بعد ' + fmtDate(h.end));
     } else {
       setText('hLbl', 'الإجازة القادمة');
@@ -542,7 +539,7 @@ function renderMatch() {
   if (diff > 0) {
     setText('mLbl', 'المباراة القادمة');
     var mins = Math.ceil(diff / 60000), days = Math.floor(mins / 1440);
-    if (days >= 1) setNum('mLeft', days, dayWord(days) + ' متبقية');
+    if (days >= 1) setNum('mLeft', days, daysLeftWord(days));
     else setNum('mLeft', Math.floor(mins / 60) + ':' + pad(mins % 60), 'متبقي');
   } else if (-diff < MATCH_LENGTH_MS) {
     setText('mLbl', 'المباراة جارية الآن');
