@@ -64,8 +64,8 @@ var TZ_OFFSET_MIN = 180; // Saudi Arabia, UTC+3, no daylight saving
 
 /* ---------- Settings (saved on this TV) ---------- */
 // cal stays null until chosen by hand, so it follows the city's region.
-var settings = { city: 'jeddah', cal: null, theme: 'auto', scene: 'trees', alerts: 'full', club: '', saved: false };
-var ALLOWED = { cal: { rest: 1, west: 1 }, theme: { auto: 1, day: 1, night: 1, dim: 1 }, scene: { trees: 1, city: 1 }, alerts: { full: 1, iqama: 1, off: 1 } };
+var settings = { city: 'jeddah', cal: null, theme: 'auto', scene: 'trees', alerts: 'full', club: '', dhikr: 'off', saved: false };
+var ALLOWED = { cal: { rest: 1, west: 1 }, theme: { auto: 1, day: 1, night: 1, dim: 1 }, scene: { trees: 1, city: 1 }, alerts: { full: 1, iqama: 1, off: 1 }, dhikr: { on: 1, off: 1 } };
 function allowed(name, val) { return typeof val === 'string' && ALLOWED[name].hasOwnProperty(val); }
 
 // Only known values are taken from storage or the link; anything else is ignored.
@@ -77,6 +77,7 @@ try {
     if (allowed('theme', saved.theme)) settings.theme = saved.theme;
     if (allowed('scene', saved.scene)) settings.scene = saved.scene;
     if (allowed('alerts', saved.alerts)) settings.alerts = saved.alerts;
+    if (allowed('dhikr', saved.dhikr)) settings.dhikr = saved.dhikr;
     if (typeof saved.club === 'string' && clubById(saved.club)) settings.club = saved.club;
     settings.saved = saved.saved === true;
   }
@@ -90,7 +91,7 @@ function calKey() { return settings.cal || city().region; }
 function saveSettings() {
   settings.saved = true;
   try {
-    localStorage.setItem('tvDashSettings', JSON.stringify({ city: settings.city, cal: settings.cal, theme: settings.theme, scene: settings.scene, alerts: settings.alerts, club: settings.club, saved: true }));
+    localStorage.setItem('tvDashSettings', JSON.stringify({ city: settings.city, cal: settings.cal, theme: settings.theme, scene: settings.scene, alerts: settings.alerts, club: settings.club, dhikr: settings.dhikr, saved: true }));
   } catch (e) {}
 }
 var RAMADAN_FALLBACK = { year: 1448, date: '2027-02-08' };
@@ -319,7 +320,7 @@ function updateSky(nowMin) {
 function applySky() {
   var t = settings.theme;
   var sky = t === 'day' ? 'sky-day' : t === 'night' ? 'sky-night' : t === 'dim' ? 'sky-dim' : autoSky;
-  var cls = sky + ' scene-' + settings.scene + (settings.club ? ' has-match' : '') + ' wx-' + weatherKind + (isFullscreen() ? '' : ' not-fs');
+  var cls = sky + ' scene-' + settings.scene + (settings.club ? ' has-match' : '') + (settings.dhikr === 'on' ? ' has-dhikr' : '') + ' wx-' + weatherKind + (isFullscreen() ? '' : ' not-fs');
   if (document.body.className !== cls) document.body.className = cls;
 }
 
@@ -552,6 +553,23 @@ function renderMatch() {
   }
 }
 
+/* ---------- Adhkar (optional): a new one every 3 minutes ---------- */
+var dhikrIdx = Math.floor(Math.random() * ADHKAR.length);
+function nextDhikr(now) {
+  if (settings.dhikr !== 'on') return;
+  dhikrIdx = (dhikrIdx + 1) % ADHKAR.length;
+  var box = $('dhikr'), item = ADHKAR[dhikrIdx];
+  var show = function () {
+    setText('dhText', item[0]);
+    setText('dhSrc', item[1]);
+    $('dhText').className = 'dh-text' + (item[0].length > 90 ? ' long' : '');
+    box.className = 'dhikr';
+  };
+  if (now) { show(); return; }
+  box.className = 'dhikr fade';      // fade out, swap the text, fade back in
+  setTimeout(show, 900);
+}
+
 /* ---------- Clock ---------- */
 function tick() {
   var n = nowKsa();
@@ -776,9 +794,10 @@ function activate(el) {
   }
   var set = el.getAttribute('data-set');
   var val = el.getAttribute('data-val');
-  if ((set === 'cal' || set === 'theme' || set === 'scene' || set === 'alerts') && allowed(set, val)) {
+  if ((set === 'cal' || set === 'theme' || set === 'scene' || set === 'alerts' || set === 'dhikr') && allowed(set, val)) {
     settings[set] = val;
     saveSettings(); refreshPanel();
+    if (set === 'dhikr' && val === 'on') nextDhikr(true);
     if (set === 'cal') updateHoliday(); else applySky();
   }
 }
@@ -858,4 +877,6 @@ setInterval(tick, 1000);
 setInterval(loadWeather, 30 * 60000);
 loadMatch();
 setInterval(loadMatch, 3 * 3600000);
+nextDhikr(true);
+setInterval(function () { nextDhikr(false); }, 3 * 60000);
 setTimeout(function () { location.reload(); }, 6 * 3600000);

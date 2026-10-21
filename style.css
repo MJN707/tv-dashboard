@@ -23,7 +23,7 @@
 :root {
   --text: #ffffff;
   --soft: rgba(255, 255, 255, 0.78);
-  --card: rgba(12, 16, 48, 0.55);
+  --card: rgba(12, 16, 48, 0.46);
   --card-line: rgba(255, 255, 255, 0.16);
   --gold: #ffc94d;
   --gold2: #ff8f3f;
@@ -225,7 +225,7 @@ body.sky-dim .art, body.sky-dim .ic, body.sky-dim .wx svg, body.sky-dim .day svg
 }
 
 /* Next prayer */
-.next { background: linear-gradient(135deg, rgba(255, 143, 63, 0.92), rgba(255, 201, 77, 0.92)); color: #3a1d00; border-color: rgba(255,255,255,0.35); }
+.next { background: linear-gradient(135deg, rgba(255, 143, 63, 0.84), rgba(255, 201, 77, 0.84)); color: #3a1d00; border-color: rgba(255,255,255,0.35); }
 .next h2 { color: rgba(58, 29, 0, 0.75); }
 .next .row { display: flex; align-items: flex-end; justify-content: space-between; }
 .next .name { font-size: 6vh; font-weight: 900; line-height: 1; }
@@ -234,7 +234,7 @@ body.sky-dim .art, body.sky-dim .ic, body.sky-dim .wx svg, body.sky-dim .day svg
 .next .left-lbl { font-size: 2vh; font-weight: 700; text-align: left; margin-bottom: 0.4vh; }
 
 /* Weather */
-.wx { flex: 1; display: flex; flex-direction: column; background: linear-gradient(160deg, rgba(31, 111, 209, 0.75), rgba(16, 30, 90, 0.75)); }
+.wx { flex: 1; display: flex; flex-direction: column; background: linear-gradient(160deg, rgba(31, 111, 209, 0.66), rgba(16, 30, 90, 0.66)); }
 .wx-now { display: flex; align-items: center; }
 .wx-now .big { width: 11vh; height: 11vh; margin-left: 2vh; }
 .wx-temp { font-size: 9vh; font-weight: 900; line-height: 1; direction: ltr; text-align: right; }
@@ -258,8 +258,8 @@ body.sky-dim .art, body.sky-dim .ic, body.sky-dim .wx svg, body.sky-dim .day svg
 .count .num { font-size: 8vh; font-weight: 900; line-height: 1.05; }
 .count .num small { font-size: 3vh; font-weight: 800; margin-right: 1vh; }
 .count .sub { font-size: 2vh; color: var(--soft); margin-top: 0.4vh; }
-.holiday { background: linear-gradient(135deg, rgba(0, 168, 150, 0.85), rgba(20, 90, 160, 0.85)); }
-.ramadan { background: linear-gradient(135deg, rgba(116, 52, 196, 0.88), rgba(40, 24, 110, 0.88)); }
+.holiday { background: linear-gradient(135deg, rgba(0, 168, 150, 0.76), rgba(20, 90, 160, 0.76)); }
+.ramadan { background: linear-gradient(135deg, rgba(116, 52, 196, 0.79), rgba(40, 24, 110, 0.79)); }
 .ramadan .dua { font-size: 2.1vh; color: var(--gold); font-weight: 700; margin-top: 0.8vh; }
 
 .status { position: absolute; bottom: 0; left: 0; font-size: 1.6vh; color: var(--soft); }
@@ -346,7 +346,7 @@ body.sky-dim .next.now { animation: none; }
 #clubGrid .chip { width: 16vh; text-align: center; padding: 0.8vh 0.5vh; font-size: 2vh; margin: 0 0 0.8vh 0.8vh; }
 .match { display: none; }
 body.has-match .match { display: flex; flex-direction: column; flex: 1; margin-top: 1.8vh;
-  background: linear-gradient(135deg, rgba(18, 140, 82, 0.85), rgba(12, 70, 60, 0.85)); }
+  background: linear-gradient(135deg, rgba(18, 140, 82, 0.76), rgba(12, 70, 60, 0.76)); }
 .stripe-match { background: linear-gradient(90deg, #ffe066, #7cf5c8); }
 .match h2 { margin-bottom: 0.6vh; }
 .m-row { flex: 1; display: flex; align-items: center; }
@@ -379,3 +379,21 @@ body.sky-dim .panel {
   --p-accent: #cdb98a; --p-on: #26221a; --p-chip: rgba(255, 255, 255, 0.05); --p-chip-line: rgba(255, 255, 255, 0.1);
   --p-focus: rgba(255, 255, 255, 0.85); --p-done: #7fae94; --p-done-text: #142019;
 }
+
+/* ---------- Adhkar line, centred between the dates and the clock ---------- */
+.dhikr {
+  flex: 1; margin: 0 3vw; max-width: 72vh; display: none; text-align: center;
+  padding: 1.2vh 2.4vh; border-radius: 2vh; background: rgba(0, 0, 0, 0.16);
+  transition: opacity 0.9s ease; opacity: 1;
+}
+body.has-dhikr .dhikr { display: block; margin-left: 9vw; }
+/* Make room: the sun/moon move into the gap beside the dates, the full-screen hint goes to the bottom */
+body.has-dhikr #orb { left: 26%; width: 10vh; height: 10vh; }
+body.has-dhikr #moon { left: 27%; width: 8vh; height: 8vh; }
+body.has-dhikr #fsHint { top: auto; bottom: 1vh; }
+.dhikr.fade { opacity: 0; }
+.dh-text { font-size: 2.8vh; font-weight: 700; line-height: 1.55; text-shadow: 0 0.3vh 1vh rgba(0, 0, 0, 0.35); }
+.dh-text.long { font-size: 2.1vh; line-height: 1.5; }
+.dh-src { font-size: 1.6vh; color: var(--soft); margin-top: 0.6vh; }
+body.sky-dim .dhikr { background: transparent; }
+body.sky-dim .dh-text { text-shadow: none; }
