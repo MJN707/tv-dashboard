@@ -308,8 +308,8 @@ function renderPrayers() {
 var autoSky = 'sky-night', weatherKind = 'clear';
 function updateSky(nowMin) {
   var t = timings;
-  // Late at night the automatic theme dims itself, until half an hour before Fajr.
-  if (nowMin >= 23 * 60 || nowMin < t.Fajr - 30) autoSky = 'sky-dim';
+  // From 1 AM the automatic theme dims itself, until half an hour before Fajr.
+  if (nowMin >= 60 && nowMin < t.Fajr - 30) autoSky = 'sky-dim';
   else if (nowMin < t.Fajr || nowMin >= t.Isha) autoSky = 'sky-night';
   else if (nowMin < t.Sunrise + 30) autoSky = 'sky-dawn';
   else if (nowMin < t.Maghrib - 30) autoSky = 'sky-day';
