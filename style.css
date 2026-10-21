@@ -176,10 +176,12 @@ body.sky-dim .art, body.sky-dim .ic, body.sky-dim .wx svg, body.sky-dim .day svg
 }
 .top { display: flex; align-items: center; justify-content: space-between; height: 17vh; }
 .clock {
+  font-variant-numeric: tabular-nums;
   direction: ltr; font-weight: 900; font-size: 15vh; line-height: 1;
   text-shadow: 0 0.6vh 2.4vh rgba(0, 0, 0, 0.35);
 }
-.clock .sec { font-size: 5vh; font-weight: 700; color: var(--soft); margin-left: 1vh; }
+.clock .sec { font-size: 5vh; font-weight: 700; color: var(--soft); margin-left: 1vh;
+  display: inline-block; width: 5.6vh; text-align: left; }
 .clock .ampm { font-size: 5vh; font-weight: 800; color: var(--gold); margin-left: 1vh; }
 .dates { text-align: left; }
 .pill {
@@ -380,20 +382,22 @@ body.sky-dim .panel {
   --p-focus: rgba(255, 255, 255, 0.85); --p-done: #7fae94; --p-done-text: #142019;
 }
 
-/* ---------- Adhkar line, centred between the dates and the clock ---------- */
-.dhikr {
-  flex: 1; margin: 0 3vw; max-width: 72vh; display: none; text-align: center;
-  padding: 1.2vh 2.4vh; border-radius: 2vh; background: rgba(0, 0, 0, 0.16);
-  transition: opacity 0.9s ease; opacity: 1;
+/* ---------- Adhkar card: shares the prayer column half and half ---------- */
+.col-prayers .card.dhikr { display: none; }
+body.has-dhikr .col-prayers .card.dhikr {
+  display: flex; flex-direction: column;
+  background: linear-gradient(160deg, rgba(40, 120, 110, 0.62), rgba(18, 50, 70, 0.62));
 }
-body.has-dhikr .dhikr { display: block; margin-left: 9vw; }
-/* Make room: the sun/moon move into the gap beside the dates, the full-screen hint goes to the bottom */
-body.has-dhikr #orb { left: 26%; width: 10vh; height: 10vh; }
-body.has-dhikr #moon { left: 27%; width: 8vh; height: 8vh; }
-body.has-dhikr #fsHint { top: auto; bottom: 1vh; }
-.dhikr.fade { opacity: 0; }
-.dh-text { font-size: 2.8vh; font-weight: 700; line-height: 1.55; text-shadow: 0 0.3vh 1vh rgba(0, 0, 0, 0.35); }
-.dh-text.long { font-size: 2.1vh; line-height: 1.5; }
-.dh-src { font-size: 1.6vh; color: var(--soft); margin-top: 0.6vh; }
-body.sky-dim .dhikr { background: transparent; }
+.dh-body { transition: opacity 0.9s ease; opacity: 1; }
+.card.dhikr.fade .dh-body { opacity: 0; }
+.stripe-dhikr { background: linear-gradient(90deg, #9be7c4, #ffe08a); }
+.dh-body { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; min-height: 0; }
+.dh-text { font-size: 2.7vh; font-weight: 700; line-height: 1.6; text-shadow: 0 0.3vh 1vh rgba(0, 0, 0, 0.3); }
+.dh-text.long { font-size: 2.2vh; line-height: 1.55; }
+.dh-text.xlong { font-size: 1.85vh; line-height: 1.5; }
+.dh-src { font-size: 1.6vh; color: var(--soft); margin-top: 0.8vh; }
+/* With the adhkar card, the prayer list gets the top half and tightens up */
+body.has-dhikr .prayer { font-size: 2.6vh; padding: 0.45vh 1.2vh; }
+body.has-dhikr .prayer .ic { width: 3.4vh; height: 3.4vh; }
+body.sky-dim .col-prayers .card.dhikr { background: var(--card); }
 body.sky-dim .dh-text { text-shadow: none; }

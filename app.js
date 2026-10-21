@@ -562,11 +562,11 @@ function nextDhikr(now) {
   var show = function () {
     setText('dhText', item[0]);
     setText('dhSrc', item[1]);
-    $('dhText').className = 'dh-text' + (item[0].length > 90 ? ' long' : '');
-    box.className = 'dhikr';
+    $('dhText').className = 'dh-text' + (item[0].length > 150 ? ' xlong' : item[0].length > 80 ? ' long' : '');
+    box.className = 'card dhikr';
   };
   if (now) { show(); return; }
-  box.className = 'dhikr fade';      // fade out, swap the text, fade back in
+  box.className = 'card dhikr fade';      // fade out, swap the text, fade back in
   setTimeout(show, 900);
 }
 

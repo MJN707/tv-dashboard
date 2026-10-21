@@ -6,7 +6,7 @@
 <title>شاشة البيت</title>
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src https://api.aladhan.com https://api.open-meteo.com https://www.thesportsdb.com; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
-<link rel="stylesheet" href="style.css?v=20261021d">
+<link rel="stylesheet" href="style.css?v=20261021e">
 </head>
 <body class="sky-night">
 
@@ -154,7 +154,6 @@
 <div id="stage">
   <div class="top">
     <div class="clock"><span id="hm">--:--</span><span class="sec" id="sec">--</span><span class="ampm" id="ampm"></span></div>
-    <div class="dhikr" id="dhikr"><div class="dh-text" id="dhText"></div><div class="dh-src" id="dhSrc"></div></div>
     <div class="dates">
       <div class="pill" id="hijri">&nbsp;</div>
       <div class="date-row">
@@ -172,6 +171,11 @@
       <div class="card">
         <h2>أوقات الصلاة · أم القرى</h2>
         <div class="prayers" id="prayers"></div>
+      </div>
+      <div class="card dhikr" id="dhikr">
+        <div class="stripe stripe-dhikr"></div>
+        <h2>ذكر</h2>
+        <div class="dh-body"><div class="dh-text" id="dhText"></div><div class="dh-src" id="dhSrc"></div></div>
       </div>
     </div>
 
@@ -252,8 +256,8 @@
   <div class="status" id="status"></div>
 </div>
 
-<script src="calendars.js?v=20261021d"></script>
-<script src="adhkar.js?v=20261021d"></script>
-<script src="app.js?v=20261021d"></script>
+<script src="calendars.js?v=20261021e"></script>
+<script src="adhkar.js?v=20261021e"></script>
+<script src="app.js?v=20261021e"></script>
 </body>
 </html>
